@@ -20,7 +20,7 @@ jobs:
   
   check-pr-description:
     name: Check PR Description
-    if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'pull_request' }}
     uses: ./.github/workflows/check-pr-description.yml
     with:
       pr_body: ${{ github.event.pull_request.body }}
