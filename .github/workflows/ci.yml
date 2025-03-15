@@ -15,9 +15,7 @@ jobs:
   create-pr-checklist:
     name: Create PR Checklist
     if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') }}
-    uses: ./.github/workflows/create-pr-checklist.yml
-    with:
-      issue_number: ${{ github.event.pull_request.number }}
+    runs-on: ubuntu-latest
 
   check-pr-labels:
     name: Check PR Labels
