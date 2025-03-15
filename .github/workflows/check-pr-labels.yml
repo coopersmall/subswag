@@ -1,4 +1,4 @@
-name: Enhancement/Bug Label Check
+name: Label Check
 
 on:
   pull_request:
