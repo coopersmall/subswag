@@ -8,10 +8,10 @@ on:
         type: string
         description: "The labels on the PR"
 
-    required_labels:
-      required: true
-      type: string
-      description: "The required labels for the PR"
+      required_labels:
+        required: true
+        type: string
+        description: "The required labels for the PR"
 
 permissions:
   pull-requests: read
