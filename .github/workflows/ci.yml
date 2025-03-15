@@ -15,14 +15,12 @@ permissions:
 jobs:
   check-pr-labels:
     name: Check PR Labels
-    if: |
-      (github.event_name == 'pull_request' && contains(fromJSON('["opened", "edited", "reopened", "synchronize", "labeled", "unlabeled"]'), github.event.action))
+    if: ${{ github.event_name == 'pull_request' }}
     uses: ./.github/workflows/check-pr-labels.yml
   
   check-pr-description:
     name: Check PR Description
-    if: |
-      (github.event_name == 'pull_request' && contains(fromJSON('["opened", "edited", "reopened", "synchronize"]'), github.event.action))
+    if: ${{ github.event_name == 'pull_request' }}
     uses: ./.github/workflows/check-pr-description.yml
     with:
       pr_body: ${{ github.event.pull_request.body }}
@@ -36,8 +34,7 @@ jobs:
       issue_number: ${{ github.event.pull_request.number || github.event.issue.number }}
 
   build-and-test:
-    if: |
-        github.event_name == 'push'
+    if: ${{ github.event_name == 'push' }}
     name: Build and Test
     uses: ./.github/workflows/build-and-test.yml
 
