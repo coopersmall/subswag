@@ -25,9 +25,6 @@ jobs:
         with:
           script: |
             const checkName = "PR Description Verification";
-            console.log(`PR Body: ${{{ inputs.pr_body }}}`);
-            console.log(`SHA: ${{{ inputs.sha }}}`);
-
             const prBody = '${{ inputs.pr_body }}';
             const sha = '${{ inputs.sha }}';
 
