@@ -1,14 +1,12 @@
 name: Check PR Labels
 
-on: [workflow_call]
+on: 
+  workflow_call:
 
 permissions:
   pull-requests: read
   contents: read
   checks: write
-
-env:
-  REQUIRED_LABELS: '["enhancement", "bug"]'
 
 jobs:
   check-labels:
@@ -16,6 +14,9 @@ jobs:
     steps:
       - name: Check for required labels
         uses: actions/github-script@v6
+        env:
+          REQUIRED_LABELS: '["enhancement", "bug"]'
+
         with:
           script: |
             const checkName = "PR Label Verification";
