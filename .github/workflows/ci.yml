@@ -5,7 +5,6 @@ on:
     types: [opened, synchronize, reopened, edited, labeled, unlabeled]
   issue_comment:
     types: [created, edited]
-  push:
 
 permissions:
   pull-requests: write 
@@ -34,7 +33,7 @@ jobs:
       issue_number: ${{ github.event.pull_request.number || github.event.issue.number }}
 
   build-and-test:
-    if: ${{ github.event_name == 'push' }}
+    if: ${{ github.event_name == 'pull_request' && github.event.action == 'synchronize' }}
     name: Build and Test
     uses: ./.github/workflows/build-and-test.yml
 
