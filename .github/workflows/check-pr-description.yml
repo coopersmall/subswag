@@ -17,7 +17,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const checkName = "PR Description Requirements";
+            const checkName = "PR Description Verification";
             const prBody = context.payload.pull_request.body || '';
 
             const check = await github.rest.checks.create({
