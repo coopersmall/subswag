@@ -4,9 +4,12 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/coopersmall/subswag/env"
 	"github.com/coopersmall/subswag/utils/actions"
+	"github.com/docker/go-connections/nat"
+	_ "github.com/lib/pq"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 )
@@ -167,7 +170,12 @@ func (t *TestEnv) startPostgres() error {
 		ContainerRequest: testcontainers.ContainerRequest{
 			Image:        "postgres:13",
 			ExposedPorts: []string{"5432/tcp"},
-			WaitingFor:   wait.ForListeningPort("5432/tcp"),
+			WaitingFor: wait.ForAll(
+				wait.ForListeningPort("5432/tcp"),
+				wait.ForSQL("5432/tcp", "postgres", func(host string, port nat.Port) string {
+					return fmt.Sprintf("postgres://test:test@%s:%s/testdb?sslmode=disable", host, port.Port())
+				}).WithStartupTimeout(30*time.Second),
+			),
 			Env: map[string]string{
 				"POSTGRES_DB":       "testdb",
 				"POSTGRES_USER":     "test",
