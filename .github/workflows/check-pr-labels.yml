@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 env:
-  REQUIRED_LABELS: '["feature", "bug"]'
+  REQUIRED_LABELS: '["enhancement", "bug"]'
 
 jobs:
   check-labels:
