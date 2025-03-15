@@ -1,6 +1,8 @@
 name: Check PR Checklist
 
 on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
   issue_comment:
     types: [created, edited]
 
@@ -10,48 +12,74 @@ permissions:
 
 jobs:
   check-boxes:
-    if: github.event.issue.pull_request
+    if: github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request)
     runs-on: ubuntu-latest
     steps:
       - name: Check Acknowledgements
         uses: actions/github-script@v6
         with:
           script: |
+            const checkName = "PR Checklist Verification";
+            
             const response = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number
+              issue_number: context.event_name === 'pull_request' ? context.payload.pull_request.number : context.issue.number
             });
             
             const checklistComment = response.data.find(comment => 
               comment.body.includes('## Required Acknowledgements')
             );
             
+            const check = await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: checkName,
+              head_sha: context.sha,
+              status: 'in_progress',
+            });
+            
             if (!checklistComment) {
+              await github.rest.checks.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                check_run_id: check.data.id,
+                status: 'completed',
+                conclusion: 'failure',
+                output: {
+                  title: 'Required Checklist Missing',
+                  summary: 'Could not find the required acknowledgements checklist in the PR comments.',
+                  text: 'Please ensure that the PR includes the Required Acknowledgements checklist.'
+                }
+              });
               return;
             }
             
             const uncheckedBoxes = (checklistComment.body.match(/\[ \]/g) || []).length;
-            const conclusion = uncheckedBoxes === 0 ? 'success' : 'failure';
-            
-            const pr = await github.rest.pulls.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.issue.number
-            });
-            
-            await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'PR Checklist Status',
-              head_sha: pr.data.head.sha,
-              status: 'completed',
-              conclusion: conclusion,
-              output: {
-                title: conclusion === 'success' ? 'All items acknowledged' : 'Pending acknowledgements',
-                summary: conclusion === 'success' 
-                  ? 'All checklist items have been acknowledged.'
-                  : 'There are still unchecked items in the acknowledgement checklist.'
-              }
-            });
-
+            if (uncheckedBoxes > 0) {
+              await github.rest.checks.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                check_run_id: check.data.id,
+                status: 'completed',
+                conclusion: 'failure',
+                output: {
+                  title: 'Missing Checklist Items',
+                  summary: `Found ${uncheckedBoxes} unchecked item${uncheckedBoxes > 1 ? 's' : ''} in the PR checklist`,
+                  text: 'Please complete all items in the Required Acknowledgements checklist before proceeding.'
+                }
+              });
+            } else {
+              await github.rest.checks.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                check_run_id: check.data.id,
+                status: 'completed',
+                conclusion: 'success',
+                output: {
+                  title: 'Checklist Complete',
+                  summary: 'All required checklist items have been completed.',
+                  text: 'The PR checklist has been properly filled out.'
+                }
+              });
+            }

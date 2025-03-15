@@ -1,5 +1,10 @@
 name: Build and Test
+
 on: [push]
+
+permissions:
+  contents: read
+  checks: write
 
 jobs:
   build:
@@ -24,22 +29,82 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v3
-
       - name: Install dependencies
         run: go mod download
 
+      - name: Create Build Status
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const check = await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Build Verification',
+              head_sha: context.sha,
+              status: 'in_progress'
+            });
+            core.exportVariable('BUILD_CHECK_ID', check.data.id);
+
       - name: Build
+        id: build
         run: make build
+        continue-on-error: true
+
+      - name: Update Build Status
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const conclusion = '${{ steps.build.outcome }}' === 'success' ? 'success' : 'failure';
+            await github.rest.checks.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              check_run_id: process.env.BUILD_CHECK_ID,
+              status: 'completed',
+              conclusion: conclusion,
+              output: {
+                title: 'Build Verification',
+                summary: conclusion === 'success' ? 'Build completed successfully' : 'Build failed'
+              }
+            });
+
+      - name: Create Test Status
+        if: steps.build.outcome == 'success'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const check = await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Test Verification',
+              head_sha: context.sha,
+              status: 'in_progress'
+            });
+            core.exportVariable('TEST_CHECK_ID', check.data.id);
 
       - name: Test
+        if: steps.build.outcome == 'success'
+        id: test
         run: |
           curl https://gotest-release.s3.amazonaws.com/gotest_linux > gotest
           chmod +x gotest
           sudo mv gotest /usr/local/bin/
           make test
-        env:
-          DOCKER_HOST: tcp://docker:2375
-          TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE: /var/run/docker.sock
-          DOCKER_BUILDKIT: 1
+        continue-on-error: true
+
+      - name: Update Test Status
+        if: steps.build.outcome == 'success' && always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const conclusion = '${{ steps.test.outcome }}' === 'success' ? 'success' : 'failure';
+            await github.rest.checks.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              check_run_id: process.env.TEST_CHECK_ID,
+              status: 'completed',
+              conclusion: conclusion,
+              output: {
+                title: 'Test Verification',
+                summary: conclusion === 'success' ? 'Tests passed successfully' : 'Tests failed'
+              }
+            });

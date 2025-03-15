@@ -7,30 +7,80 @@ on:
 permissions:
   pull-requests: read
   contents: read
+  checks: write
 
 jobs:
   check-pr-description:
     runs-on: ubuntu-latest
     steps:
-      - name: Check for Testing header
+      - name: Check PR Description Headers
         uses: actions/github-script@v6
         with:
           script: |
+            const checkName = "PR Description Verification";
             const prBody = context.payload.pull_request.body || '';
 
+            const check = await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: checkName,
+              head_sha: context.sha,
+              status: 'in_progress',
+            });
+
             const whatHeaderRegex = /^#+\s*What\s*$/m;
-
             if (!whatHeaderRegex.test(prBody)) {
-              core.setFailed('Error: What header not found in PR description. Please add a "What" header (e.g., "# What", "## What", or "### What") to your PR description');
+              await github.rest.checks.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                check_run_id: check.data.id,
+                status: 'completed',
+                conclusion: 'failure',
+                output: {
+                  title: 'Missing "What" Section',
+                  summary: 'The PR description is missing a "What" header.',
+                  text: 'Please add a "What" section to your PR description using one of these formats:\n' +
+                        '- # What\n' +
+                        '- ## What\n' +
+                        '- ### What\n\n' +
+                        'This section should describe what changes are being made in this PR.'
+                }
+              });
               return;
             }
-            
+
             const testingHeaderRegex = /^#+\s*Testing\s*$/m;
-            
             if (!testingHeaderRegex.test(prBody)) {
-              core.setFailed('Error: Testing header not found in PR description. Please add a "Testing" header (e.g., "# Testing", "## Testing", or "### Testing") to your PR description');
+              await github.rest.checks.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                check_run_id: check.data.id,
+                status: 'completed',
+                conclusion: 'failure',
+                output: {
+                  title: 'Missing "Testing" Section',
+                  summary: 'The PR description is missing a "Testing" header.',
+                  text: 'Please add a "Testing" section to your PR description using one of these formats:\n' +
+                        '- # Testing\n' +
+                        '- ## Testing\n' +
+                        '- ### Testing\n\n' +
+                        'This section should describe how to test the changes in this PR.'
+                }
+              });
               return;
             }
 
-            console.log('Testing header found in PR description');
-
+            await github.rest.checks.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              check_run_id: check.data.id,
+              status: 'completed',
+              conclusion: 'success',
+              output: {
+                title: 'PR Description Format Verified',
+                summary: 'All required sections are present in the PR description.',
+                text: 'The PR description contains both required sections:\n' +
+                      '- "What" section ✓\n' +
+                      '- "Testing" section ✓'
+              }
+            });
