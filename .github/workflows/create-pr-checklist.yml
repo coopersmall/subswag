@@ -22,7 +22,7 @@ jobs:
             Please check all boxes to confirm your understanding and agreement:
             
             - [ ] I have tested my changes locally
-            - [ ] I have updated any relevant documentation related to my changes
+            - [ ] I have updated all relevant documentation related to my changes
             - [ ] I have added/updated tests that sufficiently cover my changes
             - [ ] I understand that I am responsible for following the release process once my PR is merged
             - [ ] I understand that my PR will not be merged until all boxes are checked
