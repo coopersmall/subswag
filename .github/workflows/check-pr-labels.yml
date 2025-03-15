@@ -7,6 +7,7 @@ on:
 permissions:
   pull-requests: read
   contents: read
+  checks: write  # Add this permission for creating check runs
 
 env:
   REQUIRED_LABELS: '["enhancement", "bug"]'
@@ -19,19 +20,68 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
+            const checkName = "PR Label Verification";
             const requiredLabels = JSON.parse(process.env.REQUIRED_LABELS);
             const prLabels = context.payload.pull_request.labels.map(label => 
               label.name.toLowerCase()
             );
             
+            const check = await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: checkName,
+              head_sha: context.sha,
+              status: 'in_progress',
+            });
+
             const matchingLabels = requiredLabels.filter(required => 
               prLabels.includes(required.toLowerCase())
             );
 
             if (matchingLabels.length === 0) {
+              await github.rest.checks.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                check_run_id: check.data.id,
+                status: 'completed',
+                conclusion: 'failure',
+                output: {
+                  title: 'Missing Required Label',
+                  summary: `PR must have one of these labels: ${requiredLabels.join(', ')}`,
+                  text: 'Please add one of the required labels to categorize this PR appropriately.'
+                }
+              });
               core.setFailed(`PR must have one of these labels: ${requiredLabels.join(', ')}`);
+              return;
             }
             
             if (matchingLabels.length > 1) {
+              await github.rest.checks.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                check_run_id: check.data.id,
+                status: 'completed',
+                conclusion: 'failure',
+                output: {
+                  title: 'Multiple Conflicting Labels',
+                  summary: `PR cannot have multiple labels from: ${requiredLabels.join(', ')}`,
+                  text: `Current matching labels: ${matchingLabels.join(', ')}. Please remove all but one of these labels.`
+                }
+              });
               core.setFailed(`PR cannot have both labels: ${requiredLabels.join(', ')}`);
+              return;
             }
+
+            await github.rest.checks.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              check_run_id: check.data.id,
+              status: 'completed',
+              conclusion: 'success',
+              output: {
+                title: 'Labels Verified',
+                summary: `PR has the correct label: ${matchingLabels[0]}`,
+                text: 'The PR is properly labeled with exactly one of the required labels.'
+              }
+            });
+
