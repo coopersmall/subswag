@@ -25,8 +25,10 @@ jobs:
         with:
           script: |
             const checkName = "PR Description Verification";
-            const prBody = '{{ inputs.pr_body }}';
-            const sha = '{{ inputs.sha }}';
+            console.log(`PR Body: ${{{ inputs.pr_body }}}`);
+            console.log(`SHA: ${{{ inputs.sha }}}`);
+            const prBody = '${{ inputs.pr_body }}';
+            const sha = '${{ inputs.sha }}';
 
             const check = await github.rest.checks.create({
               owner: context.repo.owner,
