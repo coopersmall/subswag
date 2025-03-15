@@ -1,4 +1,4 @@
-name: PR Label Check
+name: Feature/Bug Label Check
 
 on:
   pull_request:

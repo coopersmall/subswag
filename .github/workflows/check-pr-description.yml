@@ -1,0 +1,24 @@
+name: Check PR Description
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check-pr-description:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for Testing header
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const prBody = context.payload.pull_request.body || '';
+            const testingHeaderRegex = /^#+\s*Testing\s*$/m;
+            
+            if (!testingHeaderRegex.test(prBody)) {
+              core.setFailed('Error: Testing header not found in PR description. Please add a "Testing" header (e.g., "# Testing", "## Testing", or "### Testing") to your PR description');
+              return;
+            }
+            
+            console.log('Testing header found in PR description');
+
