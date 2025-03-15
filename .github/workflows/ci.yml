@@ -31,8 +31,8 @@ jobs:
   check-pr-checklist:
     name: Check PR Checklist
     if: |
-      (github.event_name == 'pull_request' && contains(fromJSON('["opened", "edited", "reopened", "synchronize"]'), github.event.action)) ||
-      (github.event_name == 'issue_comment' && github.event.action == 'edited')
+      (github.event_name == 'issue_comment' && contains(fromJSON('["created", "edited"]'), github.event.action)) &&
+      ${{ github.event.issue.pull_request }}
     uses: ./.github/workflows/check-pr-checklist.yml
 
   build-and-test:
