@@ -1,13 +1,18 @@
 package db
 
 import (
+	"context"
 	"database/sql"
+	"time"
+
+	"github.com/coopersmall/subswag/utils"
 )
 
 type IDBManager interface {
 	ReadOnly() *sql.DB
 	ReadWrite() *sql.DB
 	SetSchema(schema string) error
+	WaitForConnection(ctx context.Context) error
 	Shutdown() error
 }
 
@@ -81,6 +86,16 @@ func (m *DBManager) SetSchema(schema string) error {
 		return err
 	}
 	return tx.Commit()
+}
+
+func (m *DBManager) WaitForConnection(ctx context.Context) error {
+	for i := 0; i < 30; i++ {
+		if err := m.readwrite.PingContext(ctx); err == nil {
+			return nil
+		}
+		time.Sleep(time.Second)
+	}
+	return utils.NewInternalError("failed to connect to db")
 }
 
 func (m *DBManager) Shutdown() error {

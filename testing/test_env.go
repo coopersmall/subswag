@@ -89,6 +89,10 @@ func (t *TestEnv) start() error {
 		return err
 	}
 
+	if err = t.waitForPostgres(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -193,6 +197,11 @@ func (t *TestEnv) startPostgres() error {
 	t.envVars.SetStandardPostgresURL(pgURL)
 	t.envVars.SetSharedPostgresURL(pgURL)
 	return nil
+}
+
+func (t *TestEnv) waitForPostgres() error {
+	db := t.GetDB()
+	return db.WaitForConnection(t.ctx)
 }
 
 func (t *TestEnv) startRedis() error {
