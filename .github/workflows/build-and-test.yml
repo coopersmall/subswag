@@ -61,7 +61,7 @@ jobs:
               status: 'completed',
               conclusion: conclusion,
               output: {
-                title: 'Build Status',
+                title: 'Build Verification',
                 summary: conclusion === 'success' ? 'Build completed successfully' : 'Build failed'
               }
             });
@@ -103,7 +103,7 @@ jobs:
               status: 'completed',
               conclusion: conclusion,
               output: {
-                title: 'Test Status',
+                title: 'Test Verification',
                 summary: conclusion === 'success' ? 'Tests passed successfully' : 'Tests failed'
               }
             });
