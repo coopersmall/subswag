@@ -2,7 +2,7 @@ name: Feature/Bug Label Check
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, edited]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 permissions:
   pull-requests: read
