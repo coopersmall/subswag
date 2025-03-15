@@ -1,0 +1,45 @@
+name: PR Label Check
+
+on:
+  pull_request:
+    types: [labeled, unlabeled]
+
+env:
+  REQUIRED_LABELS: '["feature", "bug"]'
+
+jobs:
+  check-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for required labels
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const requiredLabels = JSON.parse(process.env.REQUIRED_LABELS);
+            const prLabels = context.payload.pull_request.labels.map(label => 
+              label.name.toLowerCase()
+            );
+            
+            const hasRequiredLabel = requiredLabels.some(required => 
+              prLabels.includes(required.toLowerCase())
+            );
+            
+            if (!hasRequiredLabel) {
+              core.setFailed(`PR must have one of these labels: ${requiredLabels.join(', ')}`);
+            }
+
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'PR Label Check',
+              head_sha: context.payload.pull_request.head.sha,
+              status: 'completed',
+              conclusion: hasRequiredLabel ? 'success' : 'failure',
+              output: {
+                title: hasRequiredLabel ? 'Required labels present' : 'Missing required labels',
+                summary: hasRequiredLabel 
+                  ? 'PR has the required labels'
+                  : `PR must have one of these labels: ${requiredLabels.join(', ')}`
+              }
+            });
+
