@@ -17,9 +17,6 @@ jobs:
     name: Check PR Labels
     if: ${{ github.event_name == 'pull_request' }}
     uses: ./.github/workflows/check-pr-labels.yml
-    with:
-      required_labels: '["enhancement", "bug"]'
-      labels: ${{ github.event.pull_request.labels }}
   
   check-pr-description:
     name: Check PR Description

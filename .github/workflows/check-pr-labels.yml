@@ -31,7 +31,6 @@ jobs:
           script: |
             const checkName = "PR Label Verification";
             const requiredLabels = JSON.parse(process.env.REQUIRED_LABELS);
-            const labels = JSON.parse(process.env.LABELS);
             const prLabels = context.payload.pull_request.labels.map(label => 
               label.name.toLowerCase()
             );
