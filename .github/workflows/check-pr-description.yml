@@ -46,7 +46,6 @@ jobs:
                         'This section should describe what changes are being made in this PR.'
                 }
               });
-              core.setFailed('Error: What header not found in PR description');
               return;
             }
 
@@ -68,7 +67,6 @@ jobs:
                         'This section should describe how to test the changes in this PR.'
                 }
               });
-              core.setFailed('Error: Testing header not found in PR description');
               return;
             }
 

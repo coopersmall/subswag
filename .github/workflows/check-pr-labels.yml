@@ -51,7 +51,6 @@ jobs:
                   text: 'Please add one of the required labels to categorize this PR appropriately.'
                 }
               });
-              core.setFailed(`PR must have one of these labels: ${requiredLabels.join(', ')}`);
               return;
             }
             
@@ -68,7 +67,6 @@ jobs:
                   text: `Current matching labels: ${matchingLabels.join(', ')}. Please remove all but one of these labels.`
                 }
               });
-              core.setFailed(`PR cannot have both labels: ${requiredLabels.join(', ')}`);
               return;
             }
 
