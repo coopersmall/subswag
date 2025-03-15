@@ -2,7 +2,7 @@ name: PR Label Check
 
 on:
   pull_request:
-    types: [labeled, unlabeled]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 env:
   REQUIRED_LABELS: '["feature", "bug"]'
@@ -27,19 +27,3 @@ jobs:
             if (!hasRequiredLabel) {
               core.setFailed(`PR must have one of these labels: ${requiredLabels.join(', ')}`);
             }
-
-            await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'PR Label Check',
-              head_sha: context.payload.pull_request.head.sha,
-              status: 'completed',
-              conclusion: hasRequiredLabel ? 'success' : 'failure',
-              output: {
-                title: hasRequiredLabel ? 'Required labels present' : 'Missing required labels',
-                summary: hasRequiredLabel 
-                  ? 'PR has the required labels'
-                  : `PR must have one of these labels: ${requiredLabels.join(', ')}`
-              }
-            });
-
