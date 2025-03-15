@@ -31,6 +31,28 @@ jobs:
             }
             
             const uncheckedBoxes = (checklistComment.body.match(/\[ \]/g) || []).length;
-            if (uncheckedBoxes > 0) {
-              core.setFailed(`Error: ${uncheckedBoxes} unchecked boxes found in PR checklist`);
-            }
+            const conclusion = uncheckedBoxes === 0 ? 'success' : 'failure';
+            
+            const sha = context.event_name === 'pull_request' 
+              ? context.payload.pull_request.head.sha
+              : (await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: context.issue.number
+                })).data.head.sha;
+            
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'PR Checklist Status',
+              head_sha: sha,
+              status: 'completed',
+              conclusion: conclusion,
+              output: {
+                title: conclusion === 'success' ? 'All items acknowledged' : 'Pending acknowledgements',
+                summary: conclusion === 'success' 
+                  ? 'All checklist items have been acknowledged.'
+                  : 'There are still unchecked items in the acknowledgement checklist.'
+              }
+            });
+
