@@ -16,8 +16,7 @@ jobs:
   check-boxes:
     runs-on: ubuntu-latest
     steps:
-      - name: Check Acknowledgements
-        uses: actions/github-script@v6
+      - uses: actions/github-script@v6
         env:
           ISSUE_NUMBER: ${{ inputs.issue_number }}
         with:
