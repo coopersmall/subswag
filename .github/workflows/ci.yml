@@ -12,11 +12,6 @@ permissions:
   checks: write
 
 jobs:
-  create-pr-checklist:
-    name: Create PR Checklist
-    if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') }}
-    runs-on: ubuntu-latest
-
   check-pr-labels:
     name: Check PR Labels
     if: ${{ github.event_name == 'pull_request' }}
@@ -36,6 +31,11 @@ jobs:
     uses: ./.github/workflows/check-pr-checklist.yml
     with:
       issue_number: ${{ github.event.pull_request.number || github.event.issue.number }}
+
+  create-pr-checklist:
+    name: Create PR Checklist
+    runs-on: ubuntu-latest
+
 
   build-and-test:
     name: Build and Test
