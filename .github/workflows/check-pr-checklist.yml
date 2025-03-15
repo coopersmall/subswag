@@ -2,17 +2,17 @@ name: Check PR Checklist
 
 on: [workflow_call]
 
+permissions:
+  pull-requests: write
+  checks: write
 
 jobs:
   check-boxes:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      checks: write
-    env:
-      ISSUE_NUMBER: ${{ inputs.issue_number }}
     steps:
       - name: Check Acknowledgements
+        env:
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
         uses: actions/github-script@v6
         with:
           script: |
