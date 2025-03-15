@@ -32,10 +32,6 @@ jobs:
     with:
       issue_number: ${{ github.event.pull_request.number || github.event.issue.number }}
 
-  create-pr-checklist:
-    name: Create PR Checklist
-    runs-on: ubuntu-latest
-
 
   build-and-test:
     name: Build and Test
