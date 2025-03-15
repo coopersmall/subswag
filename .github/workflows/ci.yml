@@ -28,7 +28,7 @@ jobs:
 
   check-pr-checklist:
     name: Check PR Checklist
-    if: ${{ github.event_name == 'pull_request' || github.event_name == 'issue_comment' }}
+    if: ${{ github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request) }}
     uses: ./.github/workflows/check-pr-checklist.yml
     with:
       issue_number: ${{ github.event.pull_request.number || github.event.issue.number }}
