@@ -1,0 +1,37 @@
+name: Check PR Labels
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  pull-requests: read
+  contents: read
+
+env:
+  REQUIRED_LABELS: '["enhancement", "bug"]'
+
+jobs:
+  check-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for required labels
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const requiredLabels = JSON.parse(process.env.REQUIRED_LABELS);
+            const prLabels = context.payload.pull_request.labels.map(label => 
+              label.name.toLowerCase()
+            );
+            
+            const matchingLabels = requiredLabels.filter(required => 
+              prLabels.includes(required.toLowerCase())
+            );
+
+            if (matchingLabels.length === 0) {
+              core.setFailed(`PR must have one of these labels: ${requiredLabels.join(', ')}`);
+            }
+            
+            if (matchingLabels.length > 1) {
+              core.setFailed(`PR cannot have both labels: ${requiredLabels.join(', ')}`);
+            }
