@@ -1,4 +1,4 @@
-name: Check PR Checklist
+name: Verify PR Checklist
 
 on:
   workflow_call:
@@ -13,10 +13,11 @@ permissions:
   checks: write
 
 jobs:
-  check-boxes:
+  verify-checklist:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v6
+      - name: Check Acknowledgements
+        uses: actions/github-script@v6
         env:
           ISSUE_NUMBER: ${{ inputs.issue_number }}
         with:

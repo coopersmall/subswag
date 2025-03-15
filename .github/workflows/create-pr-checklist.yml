@@ -1,8 +1,12 @@
-name: PR Checklist
+name: Create PR Checklist
 
 on:
-  pull_request_target:
-    types: [opened]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        required: true
+        type: number
+        description: "The issue/PR number"
 
 permissions:
   pull-requests: write
