@@ -38,7 +38,7 @@ jobs:
             const check = await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              name: 'Build Status',
+              name: 'Build Verification',
               head_sha: context.sha,
               status: 'in_progress'
             });
@@ -74,7 +74,7 @@ jobs:
             const check = await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              name: 'Test Status',
+              name: 'Test Verification',
               head_sha: context.sha,
               status: 'in_progress'
             });
