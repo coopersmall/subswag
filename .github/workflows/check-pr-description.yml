@@ -1,8 +1,15 @@
 name: Check PR Description
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, edited]
+  workflow_call:
+    inputs:
+      pr_body:
+        required: true
+        type: string
+      sha:
+        required: true
+        type: string
+
 
 permissions:
   pull-requests: read
@@ -15,16 +22,20 @@ jobs:
     steps:
       - name: Check PR Description Headers
         uses: actions/github-script@v6
+        env:
+          PR_BODY: ${{ inputs.pr_body }}
+          SHA: ${{ inputs.sha }}
         with:
           script: |
             const checkName = "PR Description Verification";
-            const prBody = context.payload.pull_request.body || '';
+            const prBody = process.env.PR_BODY;
+            const sha = process.env.SHA;
 
             const check = await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               name: checkName,
-              head_sha: context.sha,
+              head_sha: sha,
               status: 'in_progress',
             });
 

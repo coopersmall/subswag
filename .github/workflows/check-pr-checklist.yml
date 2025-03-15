@@ -1,10 +1,12 @@
 name: Check PR Checklist
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, edited]
-  issue_comment:
-    types: [created, edited]
+  workflow_call:
+    inputs:
+      issue_number:
+        required: true
+        type: number
+        description: "The issue/PR number"
 
 permissions:
   pull-requests: write
@@ -12,11 +14,12 @@ permissions:
 
 jobs:
   check-boxes:
-    if: github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request)
     runs-on: ubuntu-latest
     steps:
       - name: Check Acknowledgements
         uses: actions/github-script@v6
+        env:
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
         with:
           script: |
             const checkName = "PR Checklist Verification";
@@ -24,7 +27,7 @@ jobs:
             const response = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.event_name === 'pull_request' ? context.payload.pull_request.number : context.issue.number
+              issue_number: process.env.ISSUE_NUMBER
             });
             
             const checklistComment = response.data.find(comment => 
