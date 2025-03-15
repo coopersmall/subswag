@@ -2,7 +2,11 @@ name: Feature/Bug Label Check
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, labeled, unlabeled]
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  pull-requests: read
+  contents: read
 
 env:
   REQUIRED_LABELS: '["feature", "bug"]'
