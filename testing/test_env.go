@@ -174,7 +174,7 @@ func (t *TestEnv) startPostgres() error {
 				wait.ForListeningPort("5432/tcp"),
 				wait.ForSQL("5432/tcp", "postgres", func(host string, port nat.Port) string {
 					return fmt.Sprintf("postgres://test:test@%s:%s/testdb?sslmode=disable", host, port.Port())
-				}).WithStartupTimeout(30*time.Second),
+				}).WithStartupTimeout(45*time.Second),
 			),
 			Env: map[string]string{
 				"POSTGRES_DB":       "testdb",
