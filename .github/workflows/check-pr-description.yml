@@ -22,11 +22,14 @@ jobs:
     steps:
       - name: Check PR Description Headers
         uses: actions/github-script@v6
+        env:
+          PR_BODY: ${{ inputs.pr_body }}
+          SHA: ${{ inputs.sha }}
         with:
           script: |
             const checkName = "PR Description Verification";
-            const prBody = '${{ inputs.pr_body }}';
-            const sha = '${{ inputs.sha }}';
+            const prBody = process.env.PR_BODY;
+            const sha = process.env.SHA;
 
             const check = await github.rest.checks.create({
               owner: context.repo.owner,
