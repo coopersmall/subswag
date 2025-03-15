@@ -1,0 +1,37 @@
+name: PR Checklist
+
+on:
+  pull_request_target:
+    types: [opened]
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  create-checklist:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Create Checklist Comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const checklistComment = `## Required Acknowledgements
+            
+            Please check all boxes to confirm your understanding and agreement:
+            
+            - [ ] I have tested my changes locally
+            - [ ] I have updated any relevant documentation related to my changes
+            - [ ] I have added/updated tests that sufficiently cover my changes
+            - [ ] I understand that I am responsible for following the release process once my PR is merged
+            - [ ] I understand that my PR will not be merged until all boxes are checked
+            
+            Please check each box by editing this comment and placing an 'x' between the brackets: [x]`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: checklistComment
+            });
