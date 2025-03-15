@@ -20,6 +20,7 @@ jobs:
         uses: actions/github-script@v6
         env:
           ISSUE_NUMBER: ${{ inputs.issue_number }}
+
         with:
           script: |
             const checkName = "PR Checklist Verification";

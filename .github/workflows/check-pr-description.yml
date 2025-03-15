@@ -25,6 +25,7 @@ jobs:
         env:
           PR_BODY: ${{ inputs.pr_body }}
           SHA: ${{ inputs.sha }}
+
         with:
           script: |
             const checkName = "PR Description Verification";

@@ -15,10 +15,12 @@ permissions:
 jobs:
   create-checklist:
     runs-on: ubuntu-latest
-    
     steps:
       - name: Create Checklist Comment
         uses: actions/github-script@v6
+        env:
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+
         with:
           script: |
             const checklistComment = `## Required Acknowledgements
