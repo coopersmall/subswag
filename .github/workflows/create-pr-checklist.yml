@@ -20,6 +20,7 @@ jobs:
             const checklistComment = `## Required Acknowledgements
             
             Please acknowledge the following items by checking the boxes below:
+            Did the edit work?
             
             - [ ] I have tested my changes locally
             - [ ] I have updated all relevant documentation related to my changes
