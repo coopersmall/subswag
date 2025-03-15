@@ -1,6 +1,15 @@
 name: Check PR Description
 
-on: [workflow_call]
+on:
+  workflow_call:
+    inputs:
+      pr_body:
+        required: true
+        type: string
+      sha:
+        required: true
+        type: string
+
 
 permissions:
   pull-requests: read
@@ -16,13 +25,14 @@ jobs:
         with:
           script: |
             const checkName = "PR Description Verification";
-            const prBody = context.payload.pull_request.body || '';
+            const prBody = {{ inputs.pr_body }};
+            const sha = {{ inputs.sha }};
 
             const check = await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               name: checkName,
-              head_sha: context.sha,
+              head_sha: sha,
               status: 'in_progress',
             });
 

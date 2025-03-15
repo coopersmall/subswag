@@ -26,6 +26,9 @@ jobs:
       github.event_name == 'push' ||
       (github.event_name == 'pull_request' && contains(fromJSON('["opened", "edited", "reopened", "synchronize"]'), github.event.action))
     uses: ./.github/workflows/check-pr-description.yml
+    with:
+      pr_body: ${{ github.event.pull_request.body }}
+      sha: ${{ github.sha }}
 
   check-pr-checklist:
     name: Check PR Checklist
