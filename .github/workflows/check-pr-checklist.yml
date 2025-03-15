@@ -13,6 +13,18 @@ permissions:
   checks: write
 
 jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug
+        run: |
+          echo "Checking PR Checklist"
+          echo "Issue Number: ${{ github.event.pull_request.number || github.event.issue.number }}"
+          echo "Event Name: ${{ github.event_name }}"
+          echo "Pull Request Number: ${{ github.event.pull_request.number }}"
+          echo "Issue Number: ${{ github.event.issue.number }}"
+          echo "Pull Request: ${{ toJson(github.event.pull_request) }}"
+          echo "Issue: ${{ toJson(github.event.issue) }}"
   check-boxes:
     runs-on: ubuntu-latest
     steps:
