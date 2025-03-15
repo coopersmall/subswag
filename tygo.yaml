@@ -1,0 +1,8 @@
+packages:
+    type_mappings:
+      time.Time: "string /* ISO8601 */"
+      "*time.Time": "string | null /* ISO8601 */"
+      "map[string]interface{}": "Record<string, unknown>"
+    exclude_files:
+      - "**/*_test.go"
+      - "**/*_mock.go"

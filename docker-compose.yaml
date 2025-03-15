@@ -1,0 +1,24 @@
+services:
+
+  apm:
+    image: ${REGISTRY:-}jaegertracing/jaeger:${JAEGER_VERSION:-latest}
+    hostname: jaeger
+    ports:
+      - "16686:16686"
+      - "4318:4318"
+
+  db:
+    image: postgres:16
+    hostname: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: shared
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+
+  cache:
+    image: redis:6.2
+    hostname: redis
+    ports:
+      - "6379:6379"
