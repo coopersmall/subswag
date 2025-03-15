@@ -8,10 +8,10 @@ on:
         type: string
         description: "The labels on the PR"
 
-      required_labels:
-        required: true
-        type: string
-        description: "The required labels for the PR"
+    required_labels:
+      required: true
+      type: string
+      description: "The required labels for the PR"
 
 permissions:
   pull-requests: read
@@ -25,16 +25,16 @@ jobs:
       - name: Check for required labels
         uses: actions/github-script@v6
         env:
-          REQUIRED_LABELS: ${{ inputs.required_labels }}
-          LABELS: ${{ toJson(inputs.labels) }}
+          REQUIRED_LABELS: '["enhancement", "bug"]'
+
         with:
           script: |
             const checkName = "PR Label Verification";
             const requiredLabels = JSON.parse(process.env.REQUIRED_LABELS);
             const labels = JSON.parse(process.env.LABELS);
-            const prLabels = Array.isArray(labels) 
-              ? labels.map(label => (typeof label === 'object' ? label.name.toLowerCase() : label.toLowerCase()))
-              : [];
+            const prLabels = context.payload.pull_request.labels.map(label => 
+              label.name.toLowerCase()
+            );
             
             const check = await github.rest.checks.create({
               owner: context.repo.owner,
