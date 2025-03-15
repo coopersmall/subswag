@@ -209,7 +209,9 @@ func (t *TestEnv) startPostgres() error {
 
 func (t *TestEnv) waitForPostgres() error {
 	db := t.GetDB()
-	return db.WaitForConnection(t.ctx)
+	ctx, cancel := context.WithTimeout(t.ctx, 30*time.Second)
+	defer cancel()
+	return db.WaitForConnection(ctx)
 }
 
 func (t *TestEnv) startRedis() error {

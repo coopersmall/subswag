@@ -89,11 +89,13 @@ func (m *DBManager) SetSchema(schema string) error {
 }
 
 func (m *DBManager) WaitForConnection(ctx context.Context) error {
-	for i := 0; i < 30; i++ {
+	select {
+	case <-ctx.Done():
+		return utils.NewInternalError("failed to connect to db")
+	case <-time.After(1 * time.Second):
 		if err := m.readwrite.PingContext(ctx); err == nil {
 			return nil
 		}
-		time.Sleep(time.Second)
 	}
 	return utils.NewInternalError("failed to connect to db")
 }
