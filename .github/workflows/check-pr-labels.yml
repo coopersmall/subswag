@@ -1,8 +1,6 @@
 name: Check PR Labels
 
-on:
-  pull_request:
-    types: [opened, synchronize, reopened, labeled, unlabeled]
+on: [workflow_call]
 
 permissions:
   pull-requests: read

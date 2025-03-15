@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+  issue_comment:
+    types: [created, edited]
+
+permissions:
+  pull-requests: write 
+  contents: read
+  checks: write
+
+jobs:
+  check-pr-labels:
+    name: Check PR Labels
+    uses: ./.github/workflows/check-pr-labels.yml
+  
+  check-pr-description:
+    name: Check PR Description
+    uses: ./.github/workflows/check-pr-description.yml
+
+  check-pr-checklist:
+    name: Check PR Checklist
+    uses: ./.github/workflows/check-pr-checklist.yml
+
+  build-and-test:
+    name: Build and Test
+    uses: ./.github/workflows/build-and-test.yml

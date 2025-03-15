@@ -1,8 +1,6 @@
 name: Check PR Description
 
-on:
-  pull_request:
-    types: [opened, synchronize, reopened, edited]
+on: [workflow_call]
 
 permissions:
   pull-requests: read
