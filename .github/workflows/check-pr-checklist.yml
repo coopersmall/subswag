@@ -17,9 +17,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Acknowledgements
+        uses: actions/github-script@v6
         env:
           ISSUE_NUMBER: ${{ inputs.issue_number }}
-        uses: actions/github-script@v6
         with:
           script: |
             const checkName = "PR Checklist Verification";
