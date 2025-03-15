@@ -17,12 +17,20 @@ jobs:
         with:
           script: |
             const prBody = context.payload.pull_request.body || '';
+
+            const whatHeaderRegex = /^#+\s*What\s*$/m;
+
+            if (!whatHeaderRegex.test(prBody)) {
+              core.setFailed('Error: What header not found in PR description. Please add a "What" header (e.g., "# What", "## What", or "### What") to your PR description');
+              return;
+            }
+            
             const testingHeaderRegex = /^#+\s*Testing\s*$/m;
             
             if (!testingHeaderRegex.test(prBody)) {
               core.setFailed('Error: Testing header not found in PR description. Please add a "Testing" header (e.g., "# Testing", "## Testing", or "### Testing") to your PR description');
               return;
             }
-            
+
             console.log('Testing header found in PR description');
 
