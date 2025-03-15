@@ -34,7 +34,7 @@ jobs:
       issue_number: ${{ github.event.pull_request.number || github.event.issue.number }}
 
   build-and-test:
-    if: ${{ github.event_name == 'pull_request' && ['opened', 'synchronize', 'reopened', 'edited', 'labeled', 'unlabeled'].includes(github.event.action) }}
+    if: ${{ github.event_name == 'pull_request' && github.event.action == 'synchronize' }}
     name: Build and Test
     uses: ./.github/workflows/build-and-test.yml
 
