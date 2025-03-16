@@ -39,9 +39,6 @@ jobs:
           name: '${{ inputs.action-name }} Verification'
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
