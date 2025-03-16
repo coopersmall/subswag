@@ -19,11 +19,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Verify Acknowledgements
-        uses: actions/github-script@v6
         env:
           ISSUE_NUMBER: ${{ inputs.issue_number }}
-
-        with:
-          script: |
-            const verifyChecklist = require('./.github/scripts/verify-checklist.js');
-            await verifyChecklist({ github, context }, process.env.ISSUE_NUMBER);
+        run: ./.github/scripts/verify-checklist.js
