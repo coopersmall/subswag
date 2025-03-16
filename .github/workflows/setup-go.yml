@@ -1,4 +1,3 @@
-# setup-go.yml
 on:
   workflow_call:
     outputs:

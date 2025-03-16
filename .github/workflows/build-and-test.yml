@@ -88,23 +88,6 @@ jobs:
               }
             });
 
-      - name: Update Build Status
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const conclusion = '${{ steps.build.outcome }}' === 'success' ? 'success' : 'failure';
-            await github.rest.checks.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              check_run_id: process.env.BUILD_CHECK_ID,
-              status: 'completed',
-              conclusion: conclusion,
-              output: {
-                title: 'Build Verification',
-                summary: conclusion === 'success' ? 'Build completed successfully' : 'Build failed'
-              }
-            });
-
       - name: Create Test Status
         if: steps.build.outcome == 'success'
         uses: actions/github-script@v6

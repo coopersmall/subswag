@@ -56,11 +56,27 @@ jobs:
     with:
       issue_number: ${{ github.event.pull_request.number }}
 
-  build-and-test:
-    name: Build and Test
+  build-backend:
+    name: Build Backend
     needs: [setup-go]
     if: ${{ github.event_name == 'pull_request' && (github.event.action == 'synchronize' || github.event.action == 'opened') }}
-    uses: ./.github/workflows/build-and-test.yml
+    uses: ./.github/workflows/build-backend.yml
+    with:
+      cache-key: ${{ needs.setup-go.outputs.cache-key }}
+
+  lint-backend:
+    name: Lint Backend
+    needs: [setup-go]
+    if: ${{ github.event_name == 'pull_request' && (github.event.action == 'synchronize' || github.event.action == 'opened') }}
+    uses: ./.github/workflows/lint-backend.yml
+    with:
+      cache-key: ${{ needs.setup-go.outputs.cache-key }}
+
+  test-backend:
+    name: Test Backend
+    needs: [setup-go]
+    if: ${{ github.event_name == 'pull_request' && (github.event.action == 'synchronize' || github.event.action == 'opened') }}
+    uses: ./.github/workflows/test-backend.yml
     with:
       cache-key: ${{ needs.setup-go.outputs.cache-key }}
 

@@ -1,0 +1,71 @@
+on:
+  workflow_call:
+    inputs:
+      cache-key:
+        description: "Cache key for Go dependencies"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
+jobs:
+  build-backend:
+    name: Build Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Build Status
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const check = await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Build Verification',
+              head_sha: context.sha,
+              status: 'in_progress'
+            });
+            core.exportVariable('BUILD_CHECK_ID', check.data.id);
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.23
+
+      - name: Use Go Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ inputs.cache-key }}
+
+      - name: Build
+        id: build
+        run: make build
+        continue-on-error: true
+
+      - name: Update Build Status
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const conclusion = '${{ steps.build.outcome }}' === 'success' ? 'success' : 'failure';
+            await github.rest.checks.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              check_run_id: process.env.BUILD_CHECK_ID,
+              status: 'completed',
+              conclusion: conclusion,
+              output: {
+                title: 'Build Verification',
+                summary: conclusion === 'success' ? 'Build completed successfully' : 'Build failed'
+              }
+            });
+
+
+
