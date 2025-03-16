@@ -15,18 +15,15 @@ permissions:
 
 jobs:
   build-actions:
-    name: Build Actions
     uses: ./.github/workflows/build-actions.yml
     secrets: inherit
 
   verify-labels:
-    name: Verify PR Labels
     if: ${{ github.event_name == 'pull_request' }}
     needs: [build-actions]
     uses: ./.github/workflows/check-pr-labels.yml
   
   verify-description:
-    name: Verify PR Description
     if: ${{ github.event_name == 'pull_request' }}
     needs: [build-actions]
     uses: ./.github/workflows/check-pr-description.yml
@@ -35,7 +32,6 @@ jobs:
       sha: ${{ github.sha }}
 
   verify-checklist:
-    name: Verify PR Checklist
     if: ${{ github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request) }}
     uses: ./.github/workflows/check-pr-checklist.yml
     needs: [build-actions]
@@ -44,7 +40,6 @@ jobs:
       issue_number: ${{ github.event.pull_request.number || github.event.issue.number }}
 
   create-checklist:
-    name: Create PR Checklist
     if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') }}
     uses: ./.github/workflows/create-pr-checklist.yml
     needs: [build-actions]
@@ -52,7 +47,6 @@ jobs:
       issue_number: ${{ github.event.pull_request.number }}
 
   build-and-test:
-    name: Build and Test
     if: ${{ github.event_name == 'pull_request' && (github.event.action == 'synchronize' || github.event.action == 'opened') }}
     uses: ./.github/workflows/build-and-test.yml
 
