@@ -1,9 +1,6 @@
+# setup-go.yml
 on:
   workflow_call:
-    inputs:
-      hash-sum:
-        required: true
-        type: string
     outputs:
       cache-key:
         description: "Cache key for Go dependencies"
@@ -18,11 +15,15 @@ jobs:
     name: Setup Go
     runs-on: ubuntu-latest
     outputs:
-      cache-key: ${{ runner.os }}-go-${{ inputs.hash-sum }}
+      cache-key: ${{ steps.set-cache-key.outputs.cache-key }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Generate Cache Key
+        id: set-cache-key
+        run: echo "cache-key=${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}" >> $GITHUB_OUTPUT
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -35,7 +36,7 @@ jobs:
           path: |
             ~/go/pkg/mod
             ~/.cache/go-build
-          key: ${{ runner.os }}-go-${{ inputs.hash-sum }}
+          key: ${{ steps.set-cache-key.outputs.cache-key }}
           restore-keys: |
             ${{ runner.os }}-go-
 
