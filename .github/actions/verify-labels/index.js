@@ -81,10 +81,11 @@ async function run({ context, octokit }, sha, labels) {
 }
 
 const sha = core.getInput('sha');
-const prLabels = JSON.parse(core.getInput('labels')).map(label =>
-  label.name.toLowerCase()
-);
+const labels = core.getInput('labels');
+console.log(labels);
+const parsed = labels ? JSON.parse(labels).map(label => label.name.toLowerCase()) : [];
+
 const context = github.context;
 const octokit = github.getOctokit(core.getInput('token'));
 
-await run({context, octokit}, sha, prLabels);
+await run({context, octokit}, sha, parsed);
