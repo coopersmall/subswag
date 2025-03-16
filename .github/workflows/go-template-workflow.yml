@@ -1,12 +1,12 @@
 on:
   workflow_call:
     inputs:
-      cache-key:
-        description: "Cache key for Go dependencies"
-        required: true
-        type: string
       action-name:
         description: "Name of the action"
+        required: true
+        type: string
+      cache-key:
+        description: "Cache key for Go dependencies"
         required: true
         type: string
       command:
@@ -17,6 +17,7 @@ on:
 permissions:
   contents: read
   checks: write
+  actions: read
 
 jobs:
   go-template-workflow:
