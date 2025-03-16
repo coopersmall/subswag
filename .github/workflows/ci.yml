@@ -60,25 +60,31 @@ jobs:
     name: Build Backend
     needs: [setup-go]
     if: ${{ github.event_name == 'pull_request' && (github.event.action == 'synchronize' || github.event.action == 'opened') }}
-    uses: ./.github/workflows/build-backend.yml
+    uses: ./.github/workflows/go-template-workflow.yml
     with:
       cache-key: ${{ needs.setup-go.outputs.cache-key }}
+      action-name: "Build"
+      command: "make build"
 
   lint-backend:
     name: Lint Backend
     needs: [setup-go]
     if: ${{ github.event_name == 'pull_request' && (github.event.action == 'synchronize' || github.event.action == 'opened') }}
-    uses: ./.github/workflows/lint-backend.yml
+    uses: ./.github/workflows/go-template-workflow.yml
     with:
       cache-key: ${{ needs.setup-go.outputs.cache-key }}
+      action-name: "Lint"
+      command: "make lint"
 
   test-backend:
     name: Test Backend
     needs: [setup-go]
     if: ${{ github.event_name == 'pull_request' && (github.event.action == 'synchronize' || github.event.action == 'opened') }}
-    uses: ./.github/workflows/test-backend.yml
+    uses: ./.github/workflows/go-template-workflow.yml
     with:
       cache-key: ${{ needs.setup-go.outputs.cache-key }}
+      action-name: "Test"
+      command: "go test ./..."
 
 concurrency:
   group: ci
