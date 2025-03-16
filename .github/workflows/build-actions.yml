@@ -38,3 +38,9 @@ jobs:
       - name: Build
         run: make build:actions
         continue-on-error: false
+
+      - name: Upload Built Actions
+        uses: actions/upload-artifact@v3
+        with:
+          name: actions
+          path: .github/actions/**/dist/

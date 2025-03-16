@@ -21,6 +21,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Download Built Actions
+        uses: actions/download-artifact@v3
+        with:
+          name: actions
+          path: .github/actions
+
       - name: Verify Acknowledgements
         uses: ./.github/actions/verify-checklist/
         with:
