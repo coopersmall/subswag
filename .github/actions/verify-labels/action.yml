@@ -1,5 +1,5 @@
-name: Verify PR Description
-description: Verifies that the PR description has the required sections
+name: Verify PR Labels
+description: Verifies that the PR has the required labels
 
 inputs:
   labels:
