@@ -1,0 +1,11 @@
+name: Verify PR Checklist
+description: Verifies that the PR checklist has been completed
+
+inputs:
+  issue_number:
+    description: "The issue/PR number"
+    required: true
+
+runs:
+  using: 'node16'
+  main: 'index.js'
