@@ -13,23 +13,30 @@ permissions:
   issues: write
 
 jobs:
-  check-pr-labels:
+  build-actions:
+    name: Build Actions
+    uses: ./.github/workflows/build-actions.yml
+
+  verify-pr-labels:
     name: Verify PR Labels
     if: ${{ github.event_name == 'pull_request' }}
+    needs: [build-actions]
     uses: ./.github/workflows/check-pr-labels.yml
   
-  check-pr-description:
+  verify-pr-description:
     name: Verify PR Description
     if: ${{ github.event_name == 'pull_request' }}
+    needs: [build-actions]
     uses: ./.github/workflows/check-pr-description.yml
     with:
       pr_body: ${{ github.event.pull_request.body }}
       sha: ${{ github.sha }}
 
-  check-pr-checklist:
+  verify-pr-checklist:
     name: Verify PR Checklist
     if: ${{ github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request) }}
     uses: ./.github/workflows/check-pr-checklist.yml
+    needs: [build-actions]
     with:
       issue_number: ${{ github.event.pull_request.number || github.event.issue.number }}
 
@@ -37,12 +44,14 @@ jobs:
     name: Create PR Checklist
     if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') }}
     uses: ./.github/workflows/create-pr-checklist.yml
+    needs: [build-actions]
     with:
       issue_number: ${{ github.event.pull_request.number }}
 
   build-and-test:
     name: Build and Test
     if: ${{ github.event_name == 'pull_request' && (github.event.action == 'synchronize' || github.event.action == 'opened') }}
+    needs: [verify-pr-labels, verify-pr-description, verify-pr-checklist]
     uses: ./.github/workflows/build-and-test.yml
 
 concurrency:

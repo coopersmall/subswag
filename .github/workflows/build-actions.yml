@@ -1,0 +1,36 @@
+name: Build Actions
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  build-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Cache Node Modules
+        uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install Dependencies
+        run: |
+          cd ./.github/actions && npm install
+        
+      - name: Build
+        run: make build:actions
+        continue-on-error: false
