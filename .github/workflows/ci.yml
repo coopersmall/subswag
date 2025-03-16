@@ -31,7 +31,7 @@ jobs:
       issue_number: ${{ github.event.pull_request.number }}
     if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') }}
 
-  build-backend:
+  backend-build:
     name: Build Backend
     needs: [build-actions, setup-go]
     uses: ./.github/workflows/verify-go.yml
@@ -41,7 +41,7 @@ jobs:
       name: "Build"
       sha: ${{ github.sha }}
 
-  lint-backend:
+  backend-lint:
     name: Lint Backend
     needs: [build-actions, setup-go]
     uses: ./.github/workflows/verify-go.yml
@@ -51,7 +51,7 @@ jobs:
       name: "Lint"
       sha: ${{ github.sha }}
 
-  test-backend:
+  backend-test:
     name: Test Backend
     needs: [build-actions, setup-go]
     uses: ./.github/workflows/verify-go.yml
