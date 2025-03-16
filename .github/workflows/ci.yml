@@ -74,7 +74,7 @@ jobs:
 
   test-backend:
     name: Test Backend
-    needs: [build-backend, lint-backend]
+    needs: [setup-go, build-backend, lint-backend]
     if: ${{ github.event_name == 'pull_request' && (github.event.action == 'synchronize' || github.event.action == 'opened') }}
     uses: ./.github/workflows/test-backend.yml
     with:
