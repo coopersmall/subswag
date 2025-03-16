@@ -17,42 +17,11 @@ jobs:
   build-actions:
     name: Build Actions
     uses: ./.github/workflows/build-actions.yml
-    if: ${{ github.event_name == 'pull_request' || github.event_name == 'issue_comment' }}
-    secrets: inherit
 
   setup-go:
     name: Setup Go
     uses: ./.github/workflows/setup-go.yml
     if: ${{ github.event_name == 'pull_request' && (github.event.action == 'synchronize' || github.event.action == 'opened') }}
-    secrets: inherit
-
-  verify-labels:
-    name: Verify PR Labels
-    needs: [build-actions]
-    if: ${{ github.event_name == 'pull_request' }}
-    uses: ./.github/workflows/verify-labels.yml
-    with:
-      labels: ${{ toJson(github.event.pull_request.labels.*.name) }}
-      sha: ${{ github.sha }}
-    secrets: inherit
-  
-  verify-description:
-    name: Verify PR Description
-    needs: [build-actions]
-    if: ${{ github.event_name == 'pull_request' }}
-    uses: ./.github/workflows/verify-description.yml
-    with:
-      pr_body: ${{ github.event.pull_request.body }}
-      sha: ${{ github.sha }}
-    secrets: inherit
-
-  verify-checklist:
-    name: Verify PR Checklist
-    needs: [build-actions]
-    if: ${{ github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request) }}
-    uses: ./.github/workflows/verify-checklist.yml
-    with:
-      issue_number: ${{ github.event.pull_request.number || github.event.issue.number }}
     secrets: inherit
 
   create-checklist:
@@ -62,6 +31,7 @@ jobs:
     uses: ./.github/workflows/create-checklist.yml
     with:
       issue_number: ${{ github.event.pull_request.number }}
+    secrets: inherit
 
   build-backend:
     name: Build Backend
@@ -89,6 +59,35 @@ jobs:
       cache-key: ${{ needs.setup-go.outputs.cache-key }}
       action-name: "Test"
       command: "go test ./..."
+
+  verify-checklist:
+    name: Verify PR Checklist
+    needs: [build-actions]
+    uses: ./.github/workflows/verify-checklist.yml
+    with:
+      issue_number: ${{ github.event.pull_request.number || github.event.issue.number }}
+    secrets: inherit
+
+  verify-description:
+    name: Verify PR Description
+    needs: [build-actions]
+    uses: ./.github/workflows/verify-description.yml
+    with:
+      pr_body: ${{ github.event.pull_request.body }}
+      sha: ${{ github.sha }}
+    secrets: inherit
+
+  verify-labels:
+    name: Verify PR Labels
+    needs: [build-actions]
+    uses: ./.github/workflows/verify-labels.yml
+    with:
+      labels: ${{ toJson(github.event.pull_request.labels.*.name) }}
+      sha: ${{ github.sha }}
+    secrets: inherit
+  
+
+
 
 concurrency:
   group: ci
