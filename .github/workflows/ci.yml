@@ -35,7 +35,7 @@ jobs:
 
   build-backend:
     name: Build Backend
-    needs: [setup-go]
+    needs: [build-actions, setup-go]
     uses: ./.github/workflows/go-template-workflow.yml
     with:
       cache-key: ${{ needs.setup-go.outputs.cache-key }}
@@ -44,7 +44,7 @@ jobs:
 
   lint-backend:
     name: Lint Backend
-    needs: [setup-go]
+    needs: [build-actions, setup-go]
     uses: ./.github/workflows/go-template-workflow.yml
     with:
       cache-key: ${{ needs.setup-go.outputs.cache-key }}
@@ -53,7 +53,7 @@ jobs:
 
   test-backend:
     name: Test Backend
-    needs: [setup-go]
+    needs: [build-actions, setup-go]
     uses: ./.github/workflows/go-template-workflow.yml
     with:
       cache-key: ${{ needs.setup-go.outputs.cache-key }}
