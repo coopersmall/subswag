@@ -84,6 +84,7 @@ jobs:
     uses: ./.github/workflows/verify-labels.yml
     with:
       labels: ${{ toJson(github.event.pull_request.labels.*.name) }}
+      required_labels: "enhancement,bug"
       sha: ${{ github.sha }}
     secrets: inherit
     if: ${{ github.event_name == 'pull_request' }}

@@ -3,7 +3,7 @@ import * as core from '@actions/core';
 
 const checkName = "Description Verification";
 
-async function run({github, octokit}, prBody, sha) {
+async function run({ github, octokit }, prBody, sha) {
   const context = github.context;
 
   const check = await octokit.rest.checks.create({

@@ -2,10 +2,8 @@ import * as github from '@actions/github';
 import * as core from '@actions/core';
 
 const checkName = "Label Verification";
-const requiredLabels = ['bug', 'enhancement'];
 
-
-async function run({ context, octokit }, sha, labels) {
+async function run({ context, octokit }, sha, labels, requiredLabels) {
   const check = await octokit.rest.checks.create({
     owner: context.repo.owner,
     repo: context.repo.repo,
@@ -83,8 +81,9 @@ async function run({ context, octokit }, sha, labels) {
 const sha = core.getInput('sha');
 const labels = core.getInput('labels');
 const parsed = labels ? JSON.parse(labels).map(label => label.toLowerCase()) : [];
+const requiredLabels = core.getInput('required_labels').split(',').map(label => label.toLowerCase());
 
 const context = github.context;
 const octokit = github.getOctokit(core.getInput('token'));
 
-await run({context, octokit}, sha, parsed);
+await run({context, octokit}, sha, parsed, requiredLabels);

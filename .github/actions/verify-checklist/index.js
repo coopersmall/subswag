@@ -3,7 +3,7 @@ import * as core from '@actions/core';
 
 const checkName = "Checklist Verification";
 
-async function run({context, octokit}, issueNumber) {
+async function run({ context, octokit }, issueNumber) {
   const check = await octokit.rest.checks.create({
       owner: context.repo.owner,
       repo: context.repo.repo,

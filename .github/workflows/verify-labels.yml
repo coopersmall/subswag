@@ -4,6 +4,9 @@ on:
       labels:
         type: string
         description: "The labels to verify"
+      required_labels:
+        type: string
+        description: "The labels that are required"
       sha:
         required: true
         type: string
@@ -32,6 +35,7 @@ jobs:
         uses: ./.github/actions/verify-labels/
         with:
           labels: ${{ inputs.labels }}
+          required_labels: ${{ inputs.required_labels }}
           sha: ${{ inputs.sha }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
