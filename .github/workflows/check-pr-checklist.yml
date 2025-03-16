@@ -11,6 +11,7 @@ on:
 permissions:
   pull-requests: write
   checks: write
+  issues: read
 
 jobs:
   verify-checklist:
