@@ -28,13 +28,13 @@ jobs:
     name: Verify PR Labels
     needs: [build-actions]
     if: ${{ github.event_name == 'pull_request' }}
-    uses: ./.github/workflows/check-pr-labels.yml
+    uses: ./.github/workflows/verify-labels.yml
   
   verify-description:
     name: Verify PR Description
     needs: [build-actions]
     if: ${{ github.event_name == 'pull_request' }}
-    uses: ./.github/workflows/check-pr-description.yml
+    uses: ./.github/workflows/verify-description.yml
     with:
       pr_body: ${{ github.event.pull_request.body }}
       sha: ${{ github.sha }}
@@ -43,7 +43,7 @@ jobs:
     name: Verify PR Checklist
     needs: [build-actions]
     if: ${{ github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request) }}
-    uses: ./.github/workflows/check-pr-checklist.yml
+    uses: ./.github/workflows/verify-checklist.yml
     with:
       issue_number: ${{ github.event.pull_request.number || github.event.issue.number }}
     secrets: inherit
@@ -52,7 +52,7 @@ jobs:
     name: Create PR Checklist
     needs: [build-actions]
     if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') }}
-    uses: ./.github/workflows/create-pr-checklist.yml
+    uses: ./.github/workflows/create-checklist.yml
     with:
       issue_number: ${{ github.event.pull_request.number }}
 
