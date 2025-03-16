@@ -2,7 +2,6 @@ on:
   workflow_call:
     inputs:
       labels:
-        required: true
         type: string
         description: "The labels to verify"
       sha:

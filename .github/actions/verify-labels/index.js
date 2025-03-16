@@ -13,6 +13,22 @@ async function run({ context, octokit }, sha, labels) {
     head_sha: sha,
     status: 'in_progress',
   });
+
+  if (!labels) {
+    await octokit.rest.checks.update({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      check_run_id: check.data.id,
+      status: 'completed',
+      conclusion: 'failure',
+      output: {
+        title: 'No Labels Found',
+        summary: 'The PR has no labels.',
+        text: 'Please add one of the required labels to categorize this PR appropriately.'
+      }
+    });
+    return;
+  }
   
   const matchingLabels = requiredLabels.filter(required => 
     labels.includes(required.toLowerCase())
