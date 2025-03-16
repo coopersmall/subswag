@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   verify-labels:
-    name: Verify PR Labels
+    name: Verify Labels
     runs-on: ubuntu-latest
     steps:
       - name: Verify for required labels

@@ -16,10 +16,10 @@ permissions:
 
 jobs:
   verify-description:
-    name: Verify PR Description
+    name: Verify Description
     runs-on: ubuntu-latest
     steps:
-      - name: Verify PR Description Headers
+      - name: Verify
         uses: actions/github-script@v6
         env:
           PR_BODY: ${{ inputs.pr_body }}
