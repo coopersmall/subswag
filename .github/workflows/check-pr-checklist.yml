@@ -25,5 +25,5 @@ jobs:
 
         with:
           script: |
-            const verifyChecklist = require('./.github/workflows/scripts/verify-checklist.js');
+            const verifyChecklist = require('./.github/scripts/verify-checklist.js');
             await verifyChecklist({ github, context }, process.env.ISSUE_NUMBER);
