@@ -30,7 +30,7 @@ jobs:
           path: |
             ~/go/pkg/mod
             ~/.cache/go-build
-          key: ${{ needs.setup.outputs.cache-key }}
+          key: ${{ inputs.cache-key }}
 
       - name: Create Build Status
         uses: actions/github-script@v6
