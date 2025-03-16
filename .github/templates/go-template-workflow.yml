@@ -1,0 +1,82 @@
+on:
+  workflow_call:
+    inputs:
+      cache-key:
+        description: "Cache key for Go dependencies"
+        required: true
+        type: string
+      action-name:
+        description: "Name of the action"
+        required: true
+        type: string
+      command:
+        description: "Command to run"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  verify-backend:
+    name: ${{ inputs.action-name }} Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Status
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const check = await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: '${{ inputs.action-name }} Verification',
+              head_sha: context.sha,
+              status: 'in_progress'
+            });
+            core.exportVariable('CHECK_ID', check.data.id);
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.23
+
+      - name: Clear Go directories
+        run: |
+          sudo chmod -R 777 ~/go/pkg/mod || true
+          rm -rf ~/go/pkg/mod
+          rm -rf ~/.cache/go-build
+
+      - name: Use Go Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ inputs.cache-key }}
+
+      - name: Run Action
+        id: action
+        run: ${{ inputs.command }}
+        continue-on-error: true
+
+      - name: Update Status
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const conclusion = '${{ steps.action.outcome }}' === 'success' ? 'success' : 'failure';
+            await github.rest.checks.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              check_run_id: process.env.CHECK_ID,
+              status: 'completed',
+              conclusion: conclusion,
+              output: {
+                title: '${{ inputs.action-name }} Verification',
+                summary: conclusion === 'success' ? '${{ inputs.action-name }} completed successfully' : '${{ inputs.action-name }} failed'
+              }
+            });
+

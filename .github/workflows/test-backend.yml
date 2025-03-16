@@ -12,67 +12,8 @@ permissions:
 
 jobs:
   test-backend:
-    name: Test Backend
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create Test Status
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const check = await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'Test Verification',
-              head_sha: context.sha,
-              status: 'in_progress'
-            });
-            core.exportVariable('TEST_CHECK_ID', check.data.id);
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 1.23
-
-      - name: Clear Go directories
-        run: |
-          sudo chmod -R 777 ~/go/pkg/mod || true
-          rm -rf ~/go/pkg/mod
-          rm -rf ~/.cache/go-build
-
-      - name: Use Go Cache
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            ~/go/pkg/mod
-            ~/.cache/go-build
-          key: ${{ inputs.cache-key }}
-
-      - name: Test
-        id: test
-        run: |
-          curl https://gotest-release.s3.amazonaws.com/gotest_linux > gotest
-          chmod +x gotest
-          sudo mv gotest /usr/local/bin/
-          make test
-        continue-on-error: true
-
-      - name: Update Test Status
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const conclusion = '${{ steps.test.outcome }}' === 'success' ? 'success' : 'failure';
-            await github.rest.checks.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              check_run_id: process.env.TEST_CHECK_ID,
-              status: 'completed',
-              conclusion: conclusion,
-              output: {
-                title: 'Test Verification',
-                summary: conclusion === 'success' ? 'Tests passed successfully' : 'Tests failed'
-              }
-            });
-
+    uses: ./.github/templates/go-template-workflow.yaml
+    with:
+      cache-key: ${{ inputs.cache-key }}
+      action-name: "Test"
+      command: "go test ./..."
