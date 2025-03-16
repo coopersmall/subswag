@@ -9,7 +9,7 @@ permissions:
   checks: write
 
 jobs:
-  check-labels:
+  verify-labels:
     runs-on: ubuntu-latest
     steps:
       - name: Verify for required labels
