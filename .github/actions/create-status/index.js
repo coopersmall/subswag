@@ -12,14 +12,14 @@ async function run({ context, octokit }, name, sha, setOutput) {
   setOutput(check.data.id);
 }
 
-
 const name = core.getInput('name');
 const sha = core.getInput('sha');
-const context = github.context;
-const octokit = github.getOctokit(core.getInput('token'));
 const setOutput = function (id) {
   core.setOutput('check_id', id);
 };
+
+const context = github.context;
+const octokit = github.getOctokit(core.getInput('token'));
 
 await run({ context, octokit }, name, sha, setOutput);
 
