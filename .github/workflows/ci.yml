@@ -28,7 +28,7 @@ jobs:
     name: Create PR Checklist
     needs: [build-actions]
     if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') }}
-    uses: ./.github/workflows/ci/create-checklist.yml
+    uses: ./.github/workflows/create-checklist.yml
     with:
       issue_number: ${{ github.event.pull_request.number }}
     secrets: inherit
@@ -63,7 +63,7 @@ jobs:
   verify-checklist:
     name: Verify PR Checklist
     needs: [build-actions]
-    uses: ./.github/workflows/ci/verify-checklist.yml
+    uses: ./.github/workflows/verify-checklist.yml
     with:
       issue_number: ${{ github.event.pull_request.number || github.event.issue.number }}
     secrets: inherit
@@ -72,7 +72,7 @@ jobs:
   verify-description:
     name: Verify PR Description
     needs: [build-actions]
-    uses: ./.github/workflows/ci/verify-description.yml
+    uses: ./.github/workflows/verify-description.yml
     with:
       pr_body: ${{ github.event.pull_request.body }}
       sha: ${{ github.sha }}
@@ -82,7 +82,7 @@ jobs:
   verify-labels:
     name: Verify PR Labels
     needs: [build-actions]
-    uses: ./.github/workflows/ci/verify-labels.yml
+    uses: ./.github/workflows/verify-labels.yml
     with:
       labels: ${{ toJson(github.event.pull_request.labels.*.name) }}
       sha: ${{ github.sha }}
