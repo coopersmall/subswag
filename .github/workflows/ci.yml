@@ -25,16 +25,14 @@ jobs:
     name: Setup Go
     uses: ./.github/workflows/setup-go.yml
     if: ${{ github.event_name == 'pull_request' && (github.event.action == 'synchronize' || github.event.action == 'opened') }}
-    secrets: inherit
 
   create-checklist:
     name: Create PR Checklist
     needs: [build-actions]
-    if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') }}
     uses: ./.github/workflows/create-checklist.yml
     with:
       issue_number: ${{ github.event.pull_request.number }}
-    secrets: inherit
+    if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') }}
 
   build-backend:
     name: Build Backend
@@ -75,7 +73,6 @@ jobs:
     uses: ./.github/workflows/verify-checklist.yml
     with:
       issue_number: ${{ github.event.pull_request.number || github.event.issue.number }}
-    secrets: inherit
     if: ${{ github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request) }}
 
   verify-description:
@@ -85,7 +82,6 @@ jobs:
     with:
       pr_body: ${{ github.event.pull_request.body }}
       sha: ${{ github.sha }}
-    secrets: inherit
     if: ${{ github.event_name == 'pull_request' }}
 
   verify-labels:
