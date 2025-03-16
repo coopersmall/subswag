@@ -72,4 +72,4 @@ const issueNumber = core.getInput('issue_number');
 const context = github.context;
 const octokit = github.getOctokit(core.getInput('token'));
 
-run({context, octokit}, issueNumber);
+await run({context, octokit}, issueNumber);
