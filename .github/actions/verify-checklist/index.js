@@ -5,7 +5,7 @@ const checkName = "Checklist Verification";
 
 const issueNumber = core.getInput('issue_number');
 const context = github.context;
-const octokit = github.getOctokit(core.getInput('token'));
+const octokit = github.getOctokit(github.token);
  
 const response = await octokit.rest.issues.listComments({
     owner: context.repo.owner,

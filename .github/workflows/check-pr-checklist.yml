@@ -7,10 +7,6 @@ on:
         required: true
         type: number
         description: "The issue/PR number"
-    token:
-      required: true
-      type: string
-      description: "The GitHub token"
 
 permissions:
   pull-requests: write
