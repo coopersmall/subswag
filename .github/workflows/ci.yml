@@ -82,9 +82,8 @@ jobs:
   verify-labels:
     name: Verify PR Labels
     needs: [build-actions]
-    uses: ./.github/workflows/pr-validation-template-workflow.yml
+    uses: ./.github/workflows/verify-labels.yml
     with:
-      action: ./.github/actions/verify-labels/
       labels: ${{ toJson(github.event.pull_request.labels.*.name) }}
       sha: ${{ github.sha }}
     secrets: inherit
