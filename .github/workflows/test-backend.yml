@@ -8,7 +8,6 @@ on:
 
 permissions:
   contents: read
-  actions: read
   checks: write
 
 jobs:
@@ -17,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Create Test Status
-        if: steps.build.outcome == 'success'
         uses: actions/github-script@v6
         with:
           script: |
