@@ -19,8 +19,8 @@ permissions:
   checks: write
 
 jobs:
-  verify-backend:
-    name: ${{ inputs.action-name }} Backend
+  go-template-workflow:
+    name: ${{ inputs.action-name }}
     runs-on: ubuntu-latest
     steps:
       - name: Create Status
