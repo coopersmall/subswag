@@ -18,6 +18,9 @@ jobs:
   verify-checklist:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
       - name: Verify Acknowledgements
         env:
           ISSUE_NUMBER: ${{ inputs.issue_number }}
