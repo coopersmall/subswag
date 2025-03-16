@@ -33,34 +33,33 @@ if (!checklistComment) {
             text: 'Please ensure that the PR includes the Required Acknowledgements checklist.'
         }
     });
-    return;
-}
- 
-const uncheckedBoxes = (checklistComment.body.match(/\[ \]/g) || []).length;
-if (uncheckedBoxes > 0) {
-    await github.rest.checks.update({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        check_run_id: check.data.id,
-        status: 'completed',
-        conclusion: 'failure',
-        output: {
-            title: 'Missing Checklist Items',
-            summary: `Found ${uncheckedBoxes} unchecked item${uncheckedBoxes > 1 ? 's' : ''} in the PR checklist`,
-            text: 'Please complete all items in the Required Acknowledgements checklist before proceeding.'
-        }
-    });
 } else {
-    await github.rest.checks.update({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        check_run_id: check.data.id,
-        status: 'completed',
-        conclusion: 'success',
-        output: {
-            title: 'Checklist Complete',
-            summary: 'All required checklist items have been completed.',
-            text: 'The PR checklist has been properly filled out.'
-        }
-    });
+  const uncheckedBoxes = (checklistComment.body.match(/\[ \]/g) || []).length;
+  if (uncheckedBoxes > 0) {
+      await github.rest.checks.update({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          check_run_id: check.data.id,
+          status: 'completed',
+          conclusion: 'failure',
+          output: {
+              title: 'Missing Checklist Items',
+              summary: `Found ${uncheckedBoxes} unchecked item${uncheckedBoxes > 1 ? 's' : ''} in the PR checklist`,
+              text: 'Please complete all items in the Required Acknowledgements checklist before proceeding.'
+          }
+      });
+  } else {
+      await github.rest.checks.update({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          check_run_id: check.data.id,
+          status: 'completed',
+          conclusion: 'success',
+          output: {
+              title: 'Checklist Complete',
+              summary: 'All required checklist items have been completed.',
+              text: 'The PR checklist has been properly filled out.'
+          }
+      });
+  }
 }
