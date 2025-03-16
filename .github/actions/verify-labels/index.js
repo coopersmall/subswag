@@ -82,8 +82,7 @@ async function run({ context, octokit }, sha, labels) {
 
 const sha = core.getInput('sha');
 const labels = core.getInput('labels');
-console.log(labels);
-const parsed = labels ? JSON.parse(labels).map(label => label.name.toLowerCase()) : [];
+const parsed = labels ? JSON.parse(labels).map(label => label.toLowerCase()) : [];
 
 const context = github.context;
 const octokit = github.getOctokit(core.getInput('token'));
