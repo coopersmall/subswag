@@ -31655,7 +31655,7 @@ const checkName = "Checklist Verification";
 
 const issueNumber = _actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput('issue_number');
 const context = _actions_github__WEBPACK_IMPORTED_MODULE_0__.context;
-const octokit = _actions_github__WEBPACK_IMPORTED_MODULE_0__.getOctokit(_actions_github__WEBPACK_IMPORTED_MODULE_0__.token);
+const octokit = _actions_github__WEBPACK_IMPORTED_MODULE_0__.getOctokit(_actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput('token'));
  
 const response = await octokit.rest.issues.listComments({
     owner: context.repo.owner,
