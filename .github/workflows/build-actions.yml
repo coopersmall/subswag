@@ -29,19 +29,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Install Dependencies
+      - name: Install Dependencies and Build
+        working-directory: ./.github/actions
         run: |
-          cd ./.github/actions && npm install
-
-      - name: Install NCC
-        run: npm install -g @vercel/ncc
-        
-      - name: Build
-        run: make build:actions
-        continue-on-error: false
+          npm ci
+          npm install -g @vercel/ncc
+          make -j build:actions
 
       - name: Upload Built Actions
         uses: actions/upload-artifact@v4
         with:
           name: actions
           path: .github/actions/**/dist/
+          compression-level: 0
