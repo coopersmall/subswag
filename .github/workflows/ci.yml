@@ -23,14 +23,6 @@ jobs:
     uses: ./.github/workflows/setup-go.yml
     if: ${{ github.event_name == 'pull_request' && (github.event.action == 'synchronize' || github.event.action == 'opened') }}
 
-  create-checklist:
-    name: Create PR Checklist
-    needs: [build-actions]
-    uses: ./.github/workflows/create-checklist.yml
-    with:
-      issue_number: ${{ github.event.pull_request.number }}
-    if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') }}
-
   backend-build:
     name: Build Backend
     needs: [build-actions, setup-go]
@@ -60,6 +52,14 @@ jobs:
       command: "go test ./..."
       name: "Test"
       sha: ${{ github.sha }}
+
+  create-checklist:
+    name: Create PR Checklist
+    needs: [build-actions]
+    uses: ./.github/workflows/create-checklist.yml
+    with:
+      issue_number: ${{ github.event.pull_request.number }}
+    if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') }}
 
   verify-checklist:
     name: Verify PR Checklist
