@@ -31654,10 +31654,12 @@ __nccwpck_require__.a(__webpack_module__, async (__webpack_handle_async_dependen
 const checkName = "Checklist Verification";
 
 const issueNumber = _actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput('issue_number');
+const context = _actions_github__WEBPACK_IMPORTED_MODULE_0__.context;
+const octokit = _actions_github__WEBPACK_IMPORTED_MODULE_0__.getOctokit(_actions_github__WEBPACK_IMPORTED_MODULE_0__.token);
  
-const response = await _actions_github__WEBPACK_IMPORTED_MODULE_0__.rest.issues.listComments({
-    owner: _actions_github__WEBPACK_IMPORTED_MODULE_0__.context.repo.owner,
-    repo: _actions_github__WEBPACK_IMPORTED_MODULE_0__.context.repo.repo,
+const response = await octokit.rest.issues.listComments({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
     issue_number: issueNumber
 });
  
@@ -31665,18 +31667,18 @@ const checklistComment = response.data.find(comment =>
     comment.body.includes('## Required Acknowledgements')
 );
  
-const check = await _actions_github__WEBPACK_IMPORTED_MODULE_0__.rest.checks.create({
-    owner: _actions_github__WEBPACK_IMPORTED_MODULE_0__.context.repo.owner,
-    repo: _actions_github__WEBPACK_IMPORTED_MODULE_0__.context.repo.repo,
+const check = await octokit.rest.checks.create({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
     name: checkName,
-    head_sha: _actions_github__WEBPACK_IMPORTED_MODULE_0__.context.sha,
+    head_sha: context.sha,
     status: 'in_progress',
 });
  
 if (!checklistComment) {
-    await _actions_github__WEBPACK_IMPORTED_MODULE_0__.rest.checks.update({
-        owner: _actions_github__WEBPACK_IMPORTED_MODULE_0__.context.repo.owner,
-        repo: _actions_github__WEBPACK_IMPORTED_MODULE_0__.context.repo.repo,
+    await octokit.rest.checks.update({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
         check_run_id: check.data.id,
         status: 'completed',
         conclusion: 'failure',
@@ -31689,9 +31691,9 @@ if (!checklistComment) {
 } else {
   const uncheckedBoxes = (checklistComment.body.match(/\[ \]/g) || []).length;
   if (uncheckedBoxes > 0) {
-      await _actions_github__WEBPACK_IMPORTED_MODULE_0__.rest.checks.update({
-          owner: _actions_github__WEBPACK_IMPORTED_MODULE_0__.context.repo.owner,
-          repo: _actions_github__WEBPACK_IMPORTED_MODULE_0__.context.repo.repo,
+      await octokit.rest.checks.update({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
           check_run_id: check.data.id,
           status: 'completed',
           conclusion: 'failure',
@@ -31702,9 +31704,9 @@ if (!checklistComment) {
           }
       });
   } else {
-      await _actions_github__WEBPACK_IMPORTED_MODULE_0__.rest.checks.update({
-          owner: _actions_github__WEBPACK_IMPORTED_MODULE_0__.context.repo.owner,
-          repo: _actions_github__WEBPACK_IMPORTED_MODULE_0__.context.repo.repo,
+      await octokit.rest.checks.update({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
           check_run_id: check.data.id,
           status: 'completed',
           conclusion: 'success',
