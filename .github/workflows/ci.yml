@@ -11,7 +11,7 @@ permissions:
   contents: read
   checks: write
   issues: write
-  actions: read
+  actions: write
 
 jobs:
   build-actions:
