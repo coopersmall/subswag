@@ -25,3 +25,5 @@ jobs:
         env:
           ISSUE_NUMBER: ${{ inputs.issue_number }}
         uses: ./.github/actions/verify-checklist/
+        with:
+          issue_number: ${{ inputs.issue_number }}
