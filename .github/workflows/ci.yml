@@ -15,19 +15,25 @@ permissions:
 
 jobs:
   build-actions:
+    name: Build Actions
     uses: ./.github/workflows/build-actions.yml
+    secrets: inherit
+
+  setup-go:
+    name: Setup Go
+    uses: ./.github/workflows/setup-go.yml
     secrets: inherit
 
   verify-labels:
     name: Verify PR Labels
-    if: ${{ github.event_name == 'pull_request' }}
     needs: [build-actions]
+    if: ${{ github.event_name == 'pull_request' }}
     uses: ./.github/workflows/check-pr-labels.yml
   
   verify-description:
     name: Verify PR Description
-    if: ${{ github.event_name == 'pull_request' }}
     needs: [build-actions]
+    if: ${{ github.event_name == 'pull_request' }}
     uses: ./.github/workflows/check-pr-description.yml
     with:
       pr_body: ${{ github.event.pull_request.body }}
@@ -35,25 +41,28 @@ jobs:
 
   verify-checklist:
     name: Verify PR Checklist
+    needs: [build-actions]
     if: ${{ github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request) }}
     uses: ./.github/workflows/check-pr-checklist.yml
-    needs: [build-actions]
-    secrets: inherit
     with:
       issue_number: ${{ github.event.pull_request.number || github.event.issue.number }}
+    secrets: inherit
 
   create-checklist:
     name: Create PR Checklist
+    needs: [build-actions]
     if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') }}
     uses: ./.github/workflows/create-pr-checklist.yml
-    needs: [build-actions]
     with:
       issue_number: ${{ github.event.pull_request.number }}
 
   build-and-test:
     name: Build and Test
+    needs: [setup-go]
     if: ${{ github.event_name == 'pull_request' && (github.event.action == 'synchronize' || github.event.action == 'opened') }}
     uses: ./.github/workflows/build-and-test.yml
+    with:
+      cache-key: ${{ needs.setup-go.outputs.cache-key }}
 
 concurrency:
   group: ci

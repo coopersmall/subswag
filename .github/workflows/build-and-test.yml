@@ -1,4 +1,10 @@
-on: [workflow_call]
+on:
+  workflow_call:
+    inputs:
+      cache-key:
+        description: "Cache key for Go dependencies"
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -18,18 +24,13 @@ jobs:
         with:
           go-version: 1.23
 
-      - name: Go Cache
-        uses: actions/cache@v4
+      - name: Use Go Cache
+        uses: actions/cache/restore@v4  # Note: using restore-only action
         with:
           path: |
-            ~/.cache/go-build
             ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-
-      - name: Install dependencies
-        run: go mod download
+            ~/.cache/go-build
+          key: ${{ needs.setup.outputs.cache-key }}
 
       - name: Create Build Status
         uses: actions/github-script@v6
