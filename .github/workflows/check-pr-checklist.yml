@@ -7,6 +7,10 @@ on:
         required: true
         type: number
         description: "The issue/PR number"
+    token:
+      required: true
+      type: string
+      description: "The GitHub token"
 
 permissions:
   pull-requests: write
@@ -22,8 +26,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Verify Acknowledgements
-        env:
-          ISSUE_NUMBER: ${{ inputs.issue_number }}
         uses: ./.github/actions/verify-checklist/
         with:
           issue_number: ${{ inputs.issue_number }}
+          token: ${{ inputs.token }}
+
