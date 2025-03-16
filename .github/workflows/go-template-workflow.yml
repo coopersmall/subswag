@@ -24,17 +24,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Create Status
-        uses: actions/github-script@v6
+        uses: ./.github/actions/create-status/
         with:
-          script: |
-            const check = await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: '${{ inputs.action-name }} Verification',
-              head_sha: context.sha,
-              status: 'in_progress'
-            });
-            core.exportVariable('CHECK_ID', check.data.id);
+          name: '${{ inputs.action-name }} Verification'
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -64,19 +57,8 @@ jobs:
         continue-on-error: true
 
       - name: Update Status
-        uses: actions/github-script@v6
+        uses: ./.github/actions/update-status/
         with:
-          script: |
-            const conclusion = '${{ steps.action.outcome }}' === 'success' ? 'success' : 'failure';
-            await github.rest.checks.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              check_run_id: process.env.CHECK_ID,
-              status: 'completed',
-              conclusion: conclusion,
-              output: {
-                title: '${{ inputs.action-name }} Verification',
-                summary: conclusion === 'success' ? '${{ inputs.action-name }} completed successfully' : '${{ inputs.action-name }} failed'
-              }
-            });
-
+          check_id: ${{ steps.action.outputs.check_id }}
+          outcome: ${{ steps.action.outcome }}
+          token: ${{ secrets.GITHUB_TOKEN }}
