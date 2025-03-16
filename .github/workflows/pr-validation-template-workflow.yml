@@ -1,0 +1,49 @@
+on: 
+  workflow_call:
+    inputs:
+      action:
+        required: true
+        type: string
+        description: "The path to the action to run"
+      pr_body:
+        type: string
+        description: "The PR body"
+      labels:
+        type: string
+        description: "The PR labels"
+      issue_number:
+        type: number
+        description: "The issue number"
+      sha:
+        required: true
+        type: string
+        description: "The commit SHA"
+
+permissions:
+  pull-requests: read
+  contents: read
+  checks: write
+
+jobs:
+  verify-labels:
+    name: Verify Labels
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Built Actions
+        uses: actions/download-artifact@v4
+        with:
+          name: actions
+          path: .github/actions
+
+      - name: Verify Labels
+        uses: ${{ inputs.action }}
+        with:
+          pr_body: ${{ inputs.pr_body }}
+          issue_number: ${{ inputs.issue_number }}
+          labels: ${{ inputs.labels }}
+          sha: ${{ inputs.sha }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
