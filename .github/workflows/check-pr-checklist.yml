@@ -89,3 +89,7 @@ jobs:
                 }
               });
             }
+
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.issue_number }}
+  cancel-in-progress: true
