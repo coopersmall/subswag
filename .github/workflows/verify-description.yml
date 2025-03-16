@@ -10,88 +10,30 @@ on:
 
 
 permissions:
-  pull-requests: read
+  pull-requests: write
   contents: read
   checks: write
+  issues: read
+  actions: read
 
 jobs:
   verify-description:
     name: Verify Description
     runs-on: ubuntu-latest
     steps:
-      - name: Verify
-        uses: actions/github-script@v6
-        env:
-          PR_BODY: ${{ inputs.pr_body }}
-          SHA: ${{ inputs.sha }}
+      - name: Checkout
+        uses: actions/checkout@v4
 
+      - name: Download Built Actions
+        uses: actions/download-artifact@v4
         with:
-          script: |
-            const checkName = "Description Verification";
-            const prBody = process.env.PR_BODY;
-            const sha = process.env.SHA;
+          name: actions
+          path: .github/actions
 
-            const check = await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: checkName,
-              head_sha: sha,
-              status: 'in_progress',
-            });
+      - name: Verify Description
+        uses: ./.github/actions/verify-description/
+        with:
+          pr_body: ${{ inputs.pr_body }}
+          sha: ${{ inputs.sha }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-            const whatHeaderRegex = /^#+\s*What\s*$/m;
-            if (!whatHeaderRegex.test(prBody)) {
-              await github.rest.checks.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                check_run_id: check.data.id,
-                status: 'completed',
-                conclusion: 'failure',
-                output: {
-                  title: 'Missing "What" Section',
-                  summary: 'The PR description is missing a "What" header.',
-                  text: 'Please add a "What" section to your PR description using one of these formats:\n' +
-                        '- # What\n' +
-                        '- ## What\n' +
-                        '- ### What\n\n' +
-                        'This section should describe what changes are being made in this PR.'
-                }
-              });
-              return;
-            }
-
-            const testingHeaderRegex = /^#+\s*Testing\s*$/m;
-            if (!testingHeaderRegex.test(prBody)) {
-              await github.rest.checks.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                check_run_id: check.data.id,
-                status: 'completed',
-                conclusion: 'failure',
-                output: {
-                  title: 'Missing "Testing" Section',
-                  summary: 'The PR description is missing a "Testing" header.',
-                  text: 'Please add a "Testing" section to your PR description using one of these formats:\n' +
-                        '- # Testing\n' +
-                        '- ## Testing\n' +
-                        '- ### Testing\n\n' +
-                        'This section should describe how to test the changes in this PR.'
-                }
-              });
-              return;
-            }
-
-            await github.rest.checks.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              check_run_id: check.data.id,
-              status: 'completed',
-              conclusion: 'success',
-              output: {
-                title: 'PR Description Format Verified',
-                summary: 'All required sections are present in the PR description.',
-                text: 'The PR description contains both required sections:\n' +
-                      '- "What" section ✓\n' +
-                      '- "Testing" section ✓'
-              }
-            });
