@@ -50,6 +50,44 @@ jobs:
         run: make build
         continue-on-error: true
 
+      - name: Create Lint Status
+        if: steps.build.outcome == 'success'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const check = await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Lint Verification',
+              head_sha: context.sha,
+              status: 'in_progress'
+            });
+            core.exportVariable('LINT_CHECK_ID', check.data.id);
+
+      - name: Lint
+        if: steps.build.outcome == 'success'
+        id: lint
+        run: make lint
+        continue-on-error: true
+
+      - name: Update Lint Status
+        if: steps.build.outcome == 'success' && always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const conclusion = '${{ steps.lint.outcome }}' === 'success' ? 'success' : 'failure';
+            await github.rest.checks.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              check_run_id: process.env.LINT_CHECK_ID,
+              status: 'completed',
+              conclusion: conclusion,
+              output: {
+                title: 'Lint Verification',
+                summary: conclusion === 'success' ? 'Linting completed successfully' : 'Linting failed'
+              }
+            });
+
       - name: Update Build Status
         uses: actions/github-script@v6
         with:

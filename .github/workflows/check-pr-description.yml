@@ -1,4 +1,4 @@
-name: Check PR Description
+name: Verify PR Description
 
 on:
   workflow_call:
@@ -20,7 +20,7 @@ jobs:
   verify-pr-description:
     runs-on: ubuntu-latest
     steps:
-      - name: Check PR Description Headers
+      - name: Verify PR Description Headers
         uses: actions/github-script@v6
         env:
           PR_BODY: ${{ inputs.pr_body }}

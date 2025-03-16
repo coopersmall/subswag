@@ -18,7 +18,7 @@ jobs:
   verify-checklist:
     runs-on: ubuntu-latest
     steps:
-      - name: Check Acknowledgements
+      - name: Verify Acknowledgements
         uses: actions/github-script@v6
         env:
           ISSUE_NUMBER: ${{ inputs.issue_number }}

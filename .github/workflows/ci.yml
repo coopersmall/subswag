@@ -14,12 +14,12 @@ permissions:
 
 jobs:
   check-pr-labels:
-    name: Check PR Labels
+    name: Verify PR Labels
     if: ${{ github.event_name == 'pull_request' }}
     uses: ./.github/workflows/check-pr-labels.yml
   
   check-pr-description:
-    name: Check PR Description
+    name: Verify PR Description
     if: ${{ github.event_name == 'pull_request' }}
     uses: ./.github/workflows/check-pr-description.yml
     with:
@@ -27,7 +27,7 @@ jobs:
       sha: ${{ github.sha }}
 
   check-pr-checklist:
-    name: Check PR Checklist
+    name: Verify PR Checklist
     if: ${{ github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request) }}
     uses: ./.github/workflows/check-pr-checklist.yml
     with:
