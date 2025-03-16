@@ -17,6 +17,7 @@ jobs:
   build-actions:
     name: Build Actions
     uses: ./.github/workflows/build-actions.yml
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'issue_comment' }}
     secrets: inherit
 
   setup-go:
