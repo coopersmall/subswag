@@ -1,5 +1,3 @@
-name: Verify PR Checklist
-
 on:
   workflow_call:
     inputs:
@@ -17,6 +15,7 @@ permissions:
 
 jobs:
   verify-checklist:
+    name: Verify PR Checklist
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

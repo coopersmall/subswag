@@ -1,5 +1,3 @@
-name: Verify PR Description
-
 on:
   workflow_call:
     inputs:

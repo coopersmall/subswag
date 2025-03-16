@@ -1,5 +1,3 @@
-name: CI
-
 on:
   pull_request:
     types: [opened, synchronize, reopened, edited, labeled, unlabeled]
@@ -12,6 +10,8 @@ permissions:
   checks: write
   issues: write
   actions: write
+
+run-name: CI
 
 jobs:
   build-actions:
