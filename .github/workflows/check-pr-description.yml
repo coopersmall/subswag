@@ -28,7 +28,7 @@ jobs:
 
         with:
           script: |
-            const checkName = "PR Description Verification";
+            const checkName = "Description Verification";
             const prBody = process.env.PR_BODY;
             const sha = process.env.SHA;
 

@@ -25,7 +25,7 @@ jobs:
 
         with:
           script: |
-            const checkName = "PR Checklist Verification";
+            const checkName = "Checklist Verification";
             
             const response = await github.rest.issues.listComments({
               owner: context.repo.owner,

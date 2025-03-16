@@ -1,4 +1,4 @@
-name: Check PR Labels
+name: Verify PR Labels
 
 on: 
   workflow_call:
@@ -12,14 +12,14 @@ jobs:
   check-labels:
     runs-on: ubuntu-latest
     steps:
-      - name: Check for required labels
+      - name: Verify for required labels
         uses: actions/github-script@v6
         env:
           REQUIRED_LABELS: '["enhancement", "bug"]'
 
         with:
           script: |
-            const checkName = "PR Label Verification";
+            const checkName = "Label Verification";
             const requiredLabels = JSON.parse(process.env.REQUIRED_LABELS);
             const prLabels = context.payload.pull_request.labels.map(label => 
               label.name.toLowerCase()
