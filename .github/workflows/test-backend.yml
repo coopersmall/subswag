@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   test-backend:
-    uses: ./.github/templates/go-template-workflow.yaml
+    uses: ./.github/templates/go-template-workflow.yml
     with:
       cache-key: ${{ inputs.cache-key }}
       action-name: "Test"
