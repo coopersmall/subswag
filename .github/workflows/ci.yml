@@ -41,6 +41,7 @@ jobs:
       cache-key: ${{ needs.setup-go.outputs.cache-key }}
       action-name: "Build"
       command: "make build"
+      sha: ${{ github.sha }}
 
   lint-backend:
     name: Lint Backend
@@ -50,6 +51,7 @@ jobs:
       cache-key: ${{ needs.setup-go.outputs.cache-key }}
       action-name: "Lint"
       command: "make lint"
+      sha: ${{ github.sha }}
 
   test-backend:
     name: Test Backend
@@ -59,6 +61,7 @@ jobs:
       cache-key: ${{ needs.setup-go.outputs.cache-key }}
       action-name: "Test"
       command: "go test ./..."
+      sha: ${{ github.sha }}
 
   verify-checklist:
     name: Verify PR Checklist

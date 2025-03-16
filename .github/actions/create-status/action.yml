@@ -5,6 +5,9 @@ inputs:
   name:
     description: "The name of the status check"
     required: true
+  sha:
+    description: "The commit SHA"
+    required: true
   token:
     description: "The GitHub token to use for authentication"
     required: true
