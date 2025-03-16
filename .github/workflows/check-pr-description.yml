@@ -18,6 +18,7 @@ permissions:
 
 jobs:
   verify-description:
+    name: Verify PR Description
     runs-on: ubuntu-latest
     steps:
       - name: Verify PR Description Headers
