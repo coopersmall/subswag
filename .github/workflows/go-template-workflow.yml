@@ -39,10 +39,11 @@ jobs:
 
       - name: Create Status
         uses: ./.github/actions/create-status/
+        id: status
         with:
           name: '${{ inputs.action-name }} Verification'
-          token: ${{ secrets.GITHUB_TOKEN }}
           sha: ${{ inputs.sha }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -71,6 +72,6 @@ jobs:
       - name: Update Status
         uses: ./.github/actions/update-status/
         with:
-          check_id: ${{ steps.action.outputs.check_id }}
+          check_id: ${{ steps.status.outputs.check_id }}
           outcome: ${{ steps.action.outcome }}
           token: ${{ secrets.GITHUB_TOKEN }}
