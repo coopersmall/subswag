@@ -45,3 +45,6 @@ jobs:
     if: ${{ github.event_name == 'pull_request' && (github.event.action == 'synchronize' || github.event.action == 'opened') }}
     uses: ./.github/workflows/build-and-test.yml
 
+concurrency:
+  group: ci
+  cancel-in-progress: true
