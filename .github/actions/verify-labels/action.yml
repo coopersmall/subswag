@@ -2,9 +2,9 @@ name: Verify PR Description
 description: Verifies that the PR description has the required sections
 
 inputs:
-  issue_number:
-    description: "The PR number"
+  labels:
     required: true
+    description: "The labels to verify"
   sha:
     description: "The commit SHA"
     required: true
