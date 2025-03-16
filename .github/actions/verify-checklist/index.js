@@ -1,10 +1,13 @@
 import { github } from '@actions/github';
+import { core } from '@actions/core';
 
 const checkName = "Checklist Verification";
+
+const issueNumber = core.getInput('issue_number');
  
 const response = await github.rest.issues.listComments({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
+    owner: github.context.repo.owner,
+    repo: github.context.repo.repo,
     issue_number: issueNumber
 });
  
@@ -13,17 +16,17 @@ const checklistComment = response.data.find(comment =>
 );
  
 const check = await github.rest.checks.create({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
+    owner: github.context.repo.owner,
+    repo: github.context.repo.repo,
     name: checkName,
-    head_sha: context.sha,
+    head_sha: github.context.sha,
     status: 'in_progress',
 });
  
 if (!checklistComment) {
     await github.rest.checks.update({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
         check_run_id: check.data.id,
         status: 'completed',
         conclusion: 'failure',
@@ -37,8 +40,8 @@ if (!checklistComment) {
   const uncheckedBoxes = (checklistComment.body.match(/\[ \]/g) || []).length;
   if (uncheckedBoxes > 0) {
       await github.rest.checks.update({
-          owner: context.repo.owner,
-          repo: context.repo.repo,
+          owner: github.context.repo.owner,
+          repo: github.context.repo.repo,
           check_run_id: check.data.id,
           status: 'completed',
           conclusion: 'failure',
@@ -50,8 +53,8 @@ if (!checklistComment) {
       });
   } else {
       await github.rest.checks.update({
-          owner: context.repo.owner,
-          repo: context.repo.repo,
+          owner: github.context.repo.owner,
+          repo: github.context.repo.repo,
           check_run_id: check.data.id,
           status: 'completed',
           conclusion: 'success',
