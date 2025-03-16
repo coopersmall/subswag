@@ -16,6 +16,12 @@ build:
 	@echo "Done!"
 .PHONY: build
 
+build\:actions:
+	@echo "Building Actions"
+	@chmod +x $(SCRIPTS_DIR)/compile-gh-actions.sh
+	@$(SCRIPTS_DIR)/compile-gh-actions.sh
+	@echo "Done!"
+
 clean:
 	@echo "Cleaning $(PROJECT_NAME)"
 	@rm -rf $(BIN_DIR)
@@ -26,6 +32,7 @@ deps: gen\:deps
 	@echo "Installing Dependencies"
 	@chmod +x $(SCRIPTS_DIR)/db.sh
 	@chmod +x $(SCRIPTS_DIR)/test.sh
+	@chmod +x $(SCRIPTS_DIR)/compile-gh-actions.sh
 	@go install github.com/air-verse/air@latest
 	@go mod tidy
 	@echo "Done!"

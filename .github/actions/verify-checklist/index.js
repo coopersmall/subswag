@@ -4,6 +4,14 @@ import * as core from '@actions/core';
 const checkName = "Checklist Verification";
 
 async function run({context, octokit}, issueNumber) {
+  const check = await octokit.rest.checks.create({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      name: checkName,
+      head_sha: context.sha,
+      status: 'in_progress',
+  });
+   
   const response = await octokit.rest.issues.listComments({
       owner: context.repo.owner,
       repo: context.repo.repo,
@@ -13,14 +21,6 @@ async function run({context, octokit}, issueNumber) {
   const checklistComment = response.data.find(comment => 
       comment.body.includes('## Required Acknowledgements')
   );
-   
-  const check = await octokit.rest.checks.create({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      name: checkName,
-      head_sha: context.sha,
-      status: 'in_progress',
-  });
    
   if (!checklistComment) {
       await octokit.rest.checks.update({

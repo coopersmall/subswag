@@ -1,9 +1,9 @@
 {
-  "name": "verify-checklist",
+  "name": "actions",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
