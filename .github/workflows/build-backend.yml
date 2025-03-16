@@ -38,6 +38,7 @@ jobs:
 
       - name: Clear Go directories
         run: |
+          sudo chmod -R 777 ~/go/pkg/mod || true
           rm -rf ~/go/pkg/mod
           rm -rf ~/.cache/go-build
 
