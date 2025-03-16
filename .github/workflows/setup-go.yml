@@ -1,0 +1,50 @@
+on:
+  workflow_call:
+    outputs:
+      cache-key:
+        description: "Cache key for Go dependencies"
+        value: ${{ jobs.setup-go.outputs.cache-key }}
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  setup-go:
+    name: Setup Go
+    runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.set-cache-key.outputs.cache-key }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate Cache Key
+        id: set-cache-key
+        run: echo "cache-key=${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}" >> $GITHUB_OUTPUT
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Clear Go directories
+        run: |
+          sudo chmod -R 777 ~/go/pkg/mod || true
+          rm -rf ~/go/pkg/mod
+          rm -rf ~/.cache/go-build
+
+      - name: Go Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ steps.set-cache-key.outputs.cache-key }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Download dependencies
+        run: go mod download
+

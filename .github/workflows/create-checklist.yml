@@ -1,8 +1,10 @@
-name: PR Checklist
-
 on:
-  pull_request_target:
-    types: [opened]
+  workflow_call:
+    inputs:
+      issue_number:
+        required: true
+        type: number
+        description: "The issue/PR number"
 
 permissions:
   pull-requests: write
@@ -10,11 +12,14 @@ permissions:
 
 jobs:
   create-checklist:
+    name: Create PR Checklist
     runs-on: ubuntu-latest
-    
     steps:
       - name: Create Checklist Comment
         uses: actions/github-script@v6
+        env:
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+
         with:
           script: |
             const checklistComment = `## Required Acknowledgements
@@ -30,6 +35,6 @@ jobs:
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number: process.env.ISSUE_NUMBER,
               body: checklistComment
             });

@@ -10,30 +10,85 @@ permissions:
   pull-requests: write 
   contents: read
   checks: write
+  issues: write
+  actions: write
 
 jobs:
-  check-pr-labels:
-    name: Check PR Labels
-    if: ${{ github.event_name == 'pull_request' }}
-    uses: ./.github/workflows/check-pr-labels.yml
-  
-  check-pr-description:
-    name: Check PR Description
-    if: ${{ github.event_name == 'pull_request' }}
-    uses: ./.github/workflows/check-pr-description.yml
+  build-actions:
+    name: Build Actions
+    uses: ./.github/workflows/build-actions.yml
+
+  setup-go:
+    name: Setup Go
+    uses: ./.github/workflows/setup-go.yml
+    if: ${{ github.event_name == 'pull_request' && (github.event.action == 'synchronize' || github.event.action == 'opened') }}
+
+  backend-build:
+    name: Build Backend
+    needs: [build-actions, setup-go]
+    uses: ./.github/workflows/verify-go.yml
+    with:
+      cache-key: ${{ needs.setup-go.outputs.cache-key }}
+      command: "make build"
+      name: "Build"
+      sha: ${{ github.sha }}
+
+  backend-lint:
+    name: Lint Backend
+    needs: [build-actions, setup-go]
+    uses: ./.github/workflows/verify-go.yml
+    with:
+      cache-key: ${{ needs.setup-go.outputs.cache-key }}
+      command: "make lint"
+      name: "Lint"
+      sha: ${{ github.sha }}
+
+  backend-test:
+    name: Test Backend
+    needs: [build-actions, setup-go]
+    uses: ./.github/workflows/verify-go.yml
+    with:
+      cache-key: ${{ needs.setup-go.outputs.cache-key }}
+      command: "go test ./..."
+      name: "Test"
+      sha: ${{ github.sha }}
+
+  create-checklist:
+    name: Create PR Checklist
+    needs: [build-actions]
+    uses: ./.github/workflows/create-checklist.yml
+    with:
+      issue_number: ${{ github.event.pull_request.number }}
+    if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') }}
+
+  verify-checklist:
+    name: Verify PR Checklist
+    needs: [build-actions]
+    uses: ./.github/workflows/verify-checklist.yml
+    with:
+      issue_number: ${{ github.event.pull_request.number || github.event.issue.number }}
+    if: ${{ github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request) }}
+
+  verify-description:
+    name: Verify PR Description
+    needs: [build-actions]
+    uses: ./.github/workflows/verify-description.yml
     with:
       pr_body: ${{ github.event.pull_request.body }}
       sha: ${{ github.sha }}
+    if: ${{ github.event_name == 'pull_request' }}
 
-  check-pr-checklist:
-    name: Check PR Checklist
-    if: ${{ github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request) }}
-    uses: ./.github/workflows/check-pr-checklist.yml
+  verify-labels:
+    name: Verify PR Labels
+    needs: [build-actions]
+    uses: ./.github/workflows/verify-labels.yml
     with:
-      issue_number: ${{ github.event.pull_request.number || github.event.issue.number }}
-
-  build-and-test:
-    if: ${{ github.event_name == 'pull_request' && github.event.action == 'synchronize' }}
-    name: Build and Test
-    uses: ./.github/workflows/build-and-test.yml
-
+      labels: ${{ toJson(github.event.pull_request.labels.*.name) }}
+      required_labels: "enhancement,bug"
+      sha: ${{ github.sha }}
+    secrets: inherit
+    if: ${{ github.event_name == 'pull_request' }}
+  
+concurrency:
+  group: ci
+  cancel-in-progress: true
