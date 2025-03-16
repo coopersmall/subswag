@@ -11,11 +11,13 @@ permissions:
   contents: read
   checks: write
   issues: write
+  actions: read
 
 jobs:
   build-actions:
     name: Build Actions
     uses: ./.github/workflows/build-actions.yml
+    secrets: inherit
 
   verify-pr-labels:
     name: Verify PR Labels
@@ -37,6 +39,7 @@ jobs:
     if: ${{ github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request) }}
     uses: ./.github/workflows/check-pr-checklist.yml
     needs: [build-actions]
+    secrets: inherit
     with:
       issue_number: ${{ github.event.pull_request.number || github.event.issue.number }}
 
