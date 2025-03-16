@@ -21,4 +21,4 @@ jobs:
       - name: Verify Acknowledgements
         env:
           ISSUE_NUMBER: ${{ inputs.issue_number }}
-        uses: ./.github/actions/verify-checklist
+        uses: .github/actions/verify-checklist
