@@ -29,6 +29,10 @@ jobs:
     needs: [build-actions]
     if: ${{ github.event_name == 'pull_request' }}
     uses: ./.github/workflows/verify-labels.yml
+    with:
+      labels: ${{ toJson(github.event.pull_request.labels.*.name) }}
+      sha: ${{ github.sha }}
+    secrets: inherit
   
   verify-description:
     name: Verify PR Description
@@ -38,6 +42,7 @@ jobs:
     with:
       pr_body: ${{ github.event.pull_request.body }}
       sha: ${{ github.sha }}
+    secrets: inherit
 
   verify-checklist:
     name: Verify PR Checklist

@@ -1,5 +1,14 @@
 on: 
   workflow_call:
+    inputs:
+      labels:
+        required: true
+        type: string
+        description: "The labels to verify"
+      sha:
+        required: true
+        type: string
+        description: "The commit SHA"
 
 permissions:
   pull-requests: read
@@ -11,73 +20,19 @@ jobs:
     name: Verify Labels
     runs-on: ubuntu-latest
     steps:
-      - name: Verify for required labels
-        uses: actions/github-script@v6
-        env:
-          REQUIRED_LABELS: '["enhancement", "bug"]'
+      - name: Checkout
+        uses: actions/checkout@v4
 
+      - name: Download Built Actions
+        uses: actions/download-artifact@v4
         with:
-          script: |
-            const checkName = "Label Verification";
-            const requiredLabels = JSON.parse(process.env.REQUIRED_LABELS);
-            const prLabels = context.payload.pull_request.labels.map(label => 
-              label.name.toLowerCase()
-            );
-            
-            const check = await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: checkName,
-              head_sha: context.sha,
-              status: 'in_progress',
-            });
+          name: actions
+          path: .github/actions
 
-            const matchingLabels = requiredLabels.filter(required => 
-              prLabels.includes(required.toLowerCase())
-            );
-
-            if (matchingLabels.length === 0) {
-              await github.rest.checks.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                check_run_id: check.data.id,
-                status: 'completed',
-                conclusion: 'failure',
-                output: {
-                  title: 'Missing Required Label',
-                  summary: `PR must have one of these labels: ${requiredLabels.join(', ')}`,
-                  text: 'Please add one of the required labels to categorize this PR appropriately.'
-                }
-              });
-              return;
-            }
-            
-            if (matchingLabels.length > 1) {
-              await github.rest.checks.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                check_run_id: check.data.id,
-                status: 'completed',
-                conclusion: 'failure',
-                output: {
-                  title: 'Multiple Conflicting Labels',
-                  summary: `PR cannot have multiple labels from: ${requiredLabels.join(', ')}`,
-                  text: `Current matching labels: ${matchingLabels.join(', ')}. Please remove all but one of these labels.`
-                }
-              });
-              return;
-            }
-
-            await github.rest.checks.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              check_run_id: check.data.id,
-              status: 'completed',
-              conclusion: 'success',
-              output: {
-                title: 'Labels Verified',
-                summary: `PR has the correct label: ${matchingLabels[0]}`,
-                text: 'The PR is properly labeled with exactly one of the required labels.'
-              }
-            });
+      - name: Verify Labels
+        uses: ./.github/actions/verify-labels/
+        with:
+          labels: ${{ inputs.labels }}
+          sha: ${{ inputs.sha }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
