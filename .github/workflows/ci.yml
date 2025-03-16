@@ -22,6 +22,8 @@ jobs:
   setup-go:
     name: Setup Go
     uses: ./.github/workflows/setup-go.yml
+    with:
+      hash-sum: ${{ hashFiles('**/go.sum') }}
     secrets: inherit
 
   verify-labels:

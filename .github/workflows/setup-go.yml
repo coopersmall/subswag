@@ -1,5 +1,9 @@
 on:
   workflow_call:
+    inputs:
+      hash-sum:
+        required: true
+        type: string
     outputs:
       cache-key:
         description: "Cache key for Go dependencies"
@@ -14,7 +18,7 @@ jobs:
     name: Setup Go
     runs-on: ubuntu-latest
     outputs:
-      cache-key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+      cache-key: ${{ runner.os }}-go-${{ inputs.hash-sum }}
 
     steps:
       - name: Checkout
@@ -31,7 +35,7 @@ jobs:
           path: |
             ~/go/pkg/mod
             ~/.cache/go-build
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          key: ${{ runner.os }}-go-${{ inputs.hash-sum }}
           restore-keys: |
             ${{ runner.os }}-go-
 
