@@ -25,5 +25,5 @@ jobs:
         uses: ./.github/actions/verify-checklist/
         with:
           issue_number: ${{ inputs.issue_number }}
-          token: ${{ inputs.token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 

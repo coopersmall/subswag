@@ -5,6 +5,9 @@ inputs:
   issue_number:
     description: "The issue/PR number"
     required: true
+  token:
+    description: "The GitHub token to use for authentication"
+    required: true
 
 runs:
   using: 'node16'
