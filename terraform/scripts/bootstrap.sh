@@ -24,8 +24,12 @@ case $ENVIRONMENT in
     ;;
 esac
 
+TERRAFORM_ORG="Microworlds"
+TERRAFORM_WORKSPACE="microworlds-${ENVIRONMENT}-${REGION}"
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
-TF_DIR="${ROOT}/bootstrap"
+SETUPS_DIR="${SCRIPT_DIR}/../setups"
+TF_DIR="${SETUPS_DIR}/bootstrap"
 
 # Authentication flow
 authenticate_gcloud() {
@@ -54,6 +58,22 @@ terraform {
     bucket = "${bucket_name}"
     prefix = "$(basename "$dir")"
   }
+}
+EOF
+
+  cat > main.tf <<EOF
+terraform {
+  cloud {
+    organization = "${TERRAFORM_ORG}"
+    workspaces {
+      name = "${TERRAFORM_WORKSPACE}"
+    }
+  }
+}
+
+provider "google" {
+  project     = "${PROJECT_ID}"
+  region      = "${REGION}"
 }
 EOF
 
@@ -102,12 +122,10 @@ main() {
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
   cd "${ROOT}"
-  echo "Processing components in: $(pwd)"
-  for dir in *; do
-    if [ -d "${dir}" ] && [ -f "${dir}/main.tf" ]; then
-      setup_backend "${dir}" "${BUCKET_NAME}"
-    fi
-  done
+
+  rm -rf "${REGION}"
+  mkdir -p "${REGION}"
+  setup_backend "${REGION}" "${BUCKET_NAME}"
 
   verify_bucket
 }
